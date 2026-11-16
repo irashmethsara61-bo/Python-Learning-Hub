@@ -29,5 +29,12 @@ No extra packages are required (uses Python's built-in `http.server` module).
 
 ## Files
 
-- `app.py` - Python web server and embedded HTML/CSS page
+- `app.py` - Python web server that serves `index.html`
+- `index.html` - the full website (design, content, and interactive demo)
 - `README_python.md` - these instructions
+
+## Live site
+
+GitHub Pages serves `index.html` directly:
+
+[https://irashmethsara61-bo.github.io/Irash/](https://irashmethsara61-bo.github.io/Irash/)
