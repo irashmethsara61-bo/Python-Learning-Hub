@@ -1553,21 +1553,24 @@
           <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
           <span style="margin-left:.35rem;">examples.py</span>
           <div class="tabs" role="tablist" aria-label="Python examples">
-            <button class="tab active" data-tab="hello" role="tab" aria-selected="true">Hello</button>
-            <button class="tab" data-tab="loop" role="tab" aria-selected="false">Loop</button>
-            <button class="tab" data-tab="function" role="tab" aria-selected="false">Function</button>
-            <button class="tab" data-tab="list" role="tab" aria-selected="false">List</button>
+            <button class="tab active" data-tab="hello" role="tab" aria-selected="true">Hello World</button>
+            <button class="tab" data-tab="loop" role="tab" aria-selected="false">Loops</button>
+            <button class="tab" data-tab="function" role="tab" aria-selected="false">Functions</button>
+            <button class="tab" data-tab="list" role="tab" aria-selected="false">Lists</button>
+            <button class="tab" data-tab="fizzbuzz" role="tab" aria-selected="false">FizzBuzz</button>
+            <button class="tab" data-tab="objects" role="tab" aria-selected="false">Objects</button>
+            <button class="tab" data-tab="files" role="tab" aria-selected="false">Files</button>
           </div>
         </div>
         <div class="code-body">
-          <pre class="code active" id="tab-hello"><code><span class="cm"># Print a friendly greeting</span>
+          <pre class="code active" id="tab-hello"><code><span class="cm"># Store the user's name, then print a greeting</span>
 <span class="kw">name</span> = <span class="fn">input</span>(<span class="str">"What is your name? "</span>)
 <span class="fn">print</span>(<span class="str">f"Hello, {name}!"</span>)
 
 <span class="cm"># Output</span>
 <span class="num2">Hello, Sam!</span></code></pre>
 
-          <pre class="code" id="tab-loop"><code><span class="cm"># Repeat an action with a loop</span>
+          <pre class="code" id="tab-loop"><code><span class="cm"># Repeat an action over a range of values</span>
 <span class="kw">for</span> step <span class="kw">in</span> <span class="fn">range</span>(<span class="num2">1</span>, <span class="num2">6</span>):
     <span class="fn">print</span>(<span class="str">f"Practice step {step} ✅"</span>)
 
@@ -1578,7 +1581,7 @@ Practice step 3 ✅
 Practice step 4 ✅
 Practice step 5 ✅</span></code></pre>
 
-          <pre class="code" id="tab-function"><code><span class="cm"># Reuse logic with a function</span>
+          <pre class="code" id="tab-function"><code><span class="cm"># Wrap reusable logic in a function</span>
 <span class="kw">def</span> <span class="fn">welcome</span>(name):
     <span class="kw">return</span> <span class="str">f"Welcome, {name}! You are learning Python."</span>
 
@@ -1587,7 +1590,7 @@ Practice step 5 ✅</span></code></pre>
 <span class="cm"># Output</span>
 <span class="num2">Welcome, Alex! You are learning Python.</span></code></pre>
 
-          <pre class="code" id="tab-list"><code><span class="cm"># Work with a collection of values</span>
+          <pre class="code" id="tab-list"><code><span class="cm"># Iterate over a collection of values</span>
 <span class="kw">topics</span> = [<span class="str">"variables"</span>, <span class="str">"loops"</span>, <span class="str">"functions"</span>]
 
 <span class="kw">for</span> topic <span class="kw">in</span> topics:
@@ -1597,6 +1600,55 @@ Practice step 5 ✅</span></code></pre>
 <span class="num2">I am learning variables 🐍
 I am learning loops 🐍
 I am learning functions 🐍</span></code></pre>
+
+          <pre class="code" id="tab-fizzbuzz"><code><span class="cm"># FizzBuzz — map multiples of 3 and 5 to Fizz and Buzz</span>
+<span class="kw">for</span> number <span class="kw">in</span> <span class="fn">range</span>(<span class="num2">1</span>, <span class="num2">101</span>):
+    <span class="kw">if</span> number <span class="fn">%</span> <span class="num2">15</span> <span class="kw">==</span> <span class="num2">0</span>:
+        <span class="fn">print</span>(<span class="str">"FizzBuzz"</span>)
+    <span class="kw">elif</span> number <span class="fn">%</span> <span class="num2">3</span> <span class="kw">==</span> <span class="num2">0</span>:
+        <span class="fn">print</span>(<span class="str">"Fizz"</span>)
+    <span class="kw">elif</span> number <span class="fn">%</span> <span class="num2">5</span> <span class="kw">==</span> <span class="num2">0</span>:
+        <span class="fn">print</span>(<span class="str">"Buzz"</span>)
+    <span class="kw">else</span>:
+        <span class="fn">print</span>(number)
+
+<span class="cm"># Output</span>
+<span class="num2">1
+2
+Fizz
+Buzz
+5
+Fizz
+10
+11
+12
+99
+FizzBuzz</span></code></pre>
+
+          <pre class="code" id="tab-objects"><code><span class="cm"># Object-oriented style: bundle state and behaviour</span>
+<span class="kw">class</span> <span class="fn">Task</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, title, priority=<span class="num2">1</span>):
+        <span class="fn">self</span>.<span class="fn">title</span> = title
+        <span class="fn">self</span>.<span class="fn">priority</span> = priority
+        <span class="fn">self</span>.<span class="fn">done</span> = <span class="num2">False</span>
+
+    <span class="fn">def</span> <span class="fn">complete</span>(self):
+        <span class="fn">self</span>.<span class="fn">done</span> = <span class="num2">True</span>
+
+task = <span class="fn">Task</span>(<span class="str">"Ship the release"</span>, priority=<span class="num2">3</span>)
+task.<span class="fn">complete</span>()
+<span class="fn">assert</span> task.<span class="fn">done</span></code></pre>
+
+          <pre class="code" id="tab-files"><code><span class="cm"># Read and persist structured task data with the json module</span>
+<span class="kw">import</span> <span class="fn">json</span>
+
+tasks = [
+    {"id": <span class="num2">1</span>, <span class="str">"title"</span>: <span class="str">"Design API"</span>, <span class="str">"done"</span>: <span class="num2">True</span>},
+    {"id": <span class="num2">2</span>, <span class="str">"title"</span>: <span class="str">"Write tests"</span>, <span class="str">"done"</span>: <span class="num2">False</span>},
+]
+
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">"tasks.json"</span>, <span class="str">"w"</span>) <span class="kw">as</span> f:
+    <span class="fn">json</span>.<span class="fn">dump</span>(tasks, f, <span class="fn">indent</span>=<span class="num2">2</span>)</code></pre>
         </div>
       </div>
     </section>
