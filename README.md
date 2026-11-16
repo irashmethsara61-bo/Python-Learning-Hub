@@ -2,6 +2,8 @@
 
 A simple Rust web application that serves a website interface explaining how Python helps people learn programming.
 
+**Live site:** [https://irashmethsara61-bo.github.io/Irash/](https://irashmethsara61-bo.github.io/Irash/)
+
 ## Prerequisites
 
 - [Rust](https://www.rust-lang.org/tools/install) (includes `cargo`)
