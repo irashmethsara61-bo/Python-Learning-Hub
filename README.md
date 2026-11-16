@@ -1,4 +1,4 @@
-# Python Learning Hub
+# Python-Learning-Hub
 
 > **How Python helps people learn programming** — a cinematic, interactive single-page site with real CPython running directly in the browser.
 
@@ -14,7 +14,7 @@
 
 ## Overview
 
-Python Learning Hub is a self-contained learning experience designed to take someone from “what is code?” to writing their first Python programs. It pairs an epic, dark interface with genuinely useful tools:
+Python-Learning-Hub is a self-contained learning experience designed to take someone from “what is code?” to writing their first Python programs. It pairs an epic, dark interface with genuinely useful tools:
 
 - **Real Python in the browser** — actual CPython compiled to WebAssembly, not a simulation.
 - **Seven annotated code examples**, an **eight-question quiz**, and a **persistent roadmap tracker**.
@@ -238,4 +238,4 @@ Remember that the binary binds to loopback by default and that assets are embedd
 
 Built by [Irash](https://github.com/irashmethsara61-bo) as a free learning resource.
 
-© 2026 Python Learning Hub
+© 2026 Python-Learning-Hub
