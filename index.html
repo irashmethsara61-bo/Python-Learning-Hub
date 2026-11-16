@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="How Python helps people learn programming: why it is beginner-friendly, real code examples, a learning roadmap, project ideas, and free resources." />
+  <meta name="theme-color" content="#060a15" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%2338bdf8'/><stop offset='1' stop-color='%23a78bfa'/></linearGradient></defs><rect width='64' height='64' rx='14' fill='url(%23g)'/><text x='32' y='43' font-family='Arial,sans-serif' font-size='30' font-weight='900' text-anchor='middle' fill='%23041120'>Py</text></svg>" />
   <title>How Python Helps People Learn Programming</title>
   <style>
     :root {
@@ -790,22 +792,170 @@
     .mini-card b { font-size: 0.95rem; }
     .mini-card span { display: block; color: var(--muted); font-size: 0.86rem; margin-top: 0.2rem; }
 
-    .resource-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.9rem; }
+    .resource-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
     .resource {
-      display: flex; gap: 0.85rem; align-items: flex-start;
-      padding: 1rem 1.1rem;
-      border-radius: 15px;
+      position: relative;
+      display: flex; gap: 0.9rem; align-items: flex-start;
+      padding: 1.05rem 1.1rem;
+      border-radius: 16px;
       border: 1px solid var(--border);
       background: var(--surface);
       text-decoration: none;
       color: var(--text);
-      transition: transform .2s ease, border-color .2s ease;
+      overflow: hidden;
+      transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
     }
-    .resource:hover { transform: translateY(-3px); border-color: rgba(56,189,248,0.4); }
-    .resource .emoji { font-size: 1.3rem; line-height: 1.2; }
-    .resource b { display: block; font-size: 0.96rem; }
-    .resource span { color: var(--muted); font-size: 0.86rem; }
-    .resource .arrow { margin-left: auto; color: var(--accent); }
+    .resource::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 0%), rgba(56,189,248,.14), transparent 62%);
+      opacity: 0;
+      transition: opacity .3s ease;
+      pointer-events: none;
+    }
+    .resource:hover { transform: translateY(-4px); border-color: rgba(56,189,248,.45); box-shadow: 0 18px 40px rgba(2,6,17,.45); }
+    .resource:hover::before { opacity: 1; }
+    .resource .emoji {
+      flex: 0 0 auto;
+      width: 46px; height: 46px;
+      display: grid; place-items: center;
+      font-size: 1.35rem;
+      border-radius: 13px;
+      background: linear-gradient(135deg, rgba(56,189,248,.18), rgba(167,139,250,.18));
+      border: 1px solid rgba(148,163,184,.22);
+    }
+    .resource-body { min-width: 0; }
+    .resource b { display: block; font-size: .98rem; letter-spacing: -.01em; }
+    .resource .r-desc { display: block; color: var(--muted); font-size: .86rem; margin-top: .18rem; }
+    .resource-badges { display: flex; flex-wrap: wrap; gap: .32rem; margin-top: .55rem; }
+    .badge {
+      font-size: .6rem;
+      font-weight: 800;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: .22rem .5rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,.28);
+      color: #cbd9ee;
+      background: rgba(148,163,184,.08);
+      white-space: nowrap;
+    }
+    .badge.free { color: #7dd3fc; border-color: rgba(56,189,248,.4); background: rgba(56,189,248,.1); }
+    .badge.video { color: #c4b5fd; border-color: rgba(167,139,250,.4); background: rgba(167,139,250,.1); }
+    .badge.cert { color: #6ee7b7; border-color: rgba(52,211,153,.4); background: rgba(52,211,153,.1); }
+    .badge.book { color: #fcd34d; border-color: rgba(251,191,36,.4); background: rgba(251,191,36,.1); }
+    .badge.official { color: #fff; border-color: rgba(255,255,255,.35); background: rgba(255,255,255,.08); }
+    .resource .arrow {
+      margin-left: auto; align-self: center;
+      color: var(--accent);
+      font-size: 1.05rem;
+      transition: transform .25s ease;
+    }
+    .resource:hover .arrow { transform: translate(3px, -3px); }
+
+    /* Featured learning path */
+    .resource-hero {
+      position: relative;
+      padding: 1.5rem 1.5rem 1.45rem;
+      margin-bottom: 1.35rem;
+      border-radius: 22px;
+      border: 1px solid transparent;
+      background:
+        linear-gradient(155deg, rgba(15,23,42,.94), rgba(6,10,21,.97)) padding-box,
+        linear-gradient(120deg, rgba(56,189,248,.75), rgba(167,139,250,.6), rgba(56,189,248,.35)) border-box;
+      box-shadow: 0 30px 70px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.07);
+      overflow: hidden;
+    }
+    .resource-hero::before {
+      content: "";
+      position: absolute;
+      top: -55%; left: -8%;
+      width: 45%; height: 120%;
+      background: radial-gradient(circle, rgba(56,189,248,.16), transparent 70%);
+      filter: blur(28px);
+      pointer-events: none;
+    }
+    .resource-hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      font-size: .66rem;
+      font-weight: 800;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: #04111f;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      border-radius: 999px;
+      padding: .32rem .75rem;
+      margin-bottom: .85rem;
+      box-shadow: 0 8px 22px rgba(56,189,248,.35);
+    }
+    .resource-hero h3 {
+      font-size: clamp(1.2rem, 2.4vw, 1.5rem);
+      letter-spacing: -.015em;
+      margin-bottom: .35rem;
+    }
+    .resource-hero > p { color: var(--muted); font-size: .92rem; max-width: 68ch; }
+    .path-steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: .8rem;
+      margin-top: 1.15rem;
+    }
+    .path-step {
+      position: relative;
+      padding: .95rem 1rem;
+      border-radius: 15px;
+      border: 1px solid rgba(148,163,184,.22);
+      background: rgba(8,14,28,.55);
+      text-decoration: none;
+      color: var(--text);
+      transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+      overflow: hidden;
+    }
+    .path-step:hover { transform: translateY(-3px); border-color: rgba(56,189,248,.5); box-shadow: 0 16px 34px rgba(2,6,17,.45); }
+    .path-step .step-num {
+      position: absolute;
+      top: .55rem; right: .75rem;
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(56,189,248,.35);
+      line-height: 1;
+    }
+    .path-step .step-kicker {
+      font-size: .62rem;
+      font-weight: 800;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: .3rem;
+    }
+    .path-step b { display: block; font-size: .98rem; margin-bottom: .22rem; }
+    .path-step .step-desc { display: block; color: var(--muted); font-size: .82rem; }
+    .path-step .step-go {
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+      margin-top: .6rem;
+      font-size: .74rem;
+      font-weight: 700;
+      color: #7dd3fc;
+    }
+    .path-step:hover .step-go { color: #bae6fd; }
+    .resource-count {
+      margin-top: 1.05rem;
+      color: var(--muted);
+      font-size: .78rem;
+      letter-spacing: .06em;
+    }
+    @media (max-width: 900px) {
+      .path-steps { grid-template-columns: 1fr; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .resource, .path-step, .resource .arrow { transition: none; }
+    }
 
     /* ---------- Creator ---------- */
     .creator-section {
@@ -1588,38 +1738,147 @@ I am learning functions 🐍</span></code></pre>
     <section id="resources">
       <div class="section-head reveal">
         <span class="kicker">Keep going</span>
-        <h2>Free resources worth your time</h2>
-        <p>These are respected, beginner-friendly places to learn and practice Python.</p>
+        <h2>Learn Python online — free and verified</h2>
+        <p>Every link below was checked and confirmed working. Pick one, or follow the fast-start path.</p>
       </div>
+
+      <div class="resource-hero reveal">
+        <span class="resource-hero-tag">⚡ Fast-start path</span>
+        <h3>From zero to writing real code in three steps</h3>
+        <p>This is the shortest proven route for complete beginners — learn the basics, practice interactively, then solve real exercises with feedback.</p>
+        <div class="path-steps">
+          <a class="path-step" href="https://www.w3schools.com/python/" target="_blank" rel="noopener">
+            <span class="step-num">01</span>
+            <span class="step-kicker">Step 1 · Learn the basics</span>
+            <b>W3Schools Python</b>
+            <span class="step-desc">Short lessons with a "try it yourself" editor on every page.</span>
+            <span class="step-go">Start learning →</span>
+          </a>
+          <a class="path-step" href="https://futurecoder.io/" target="_blank" rel="noopener">
+            <span class="step-num">02</span>
+            <span class="step-kicker">Step 2 · Practice in the browser</span>
+            <b>futurecoder</b>
+            <span class="step-desc">100% free, fully interactive course — write real code instantly.</span>
+            <span class="step-go">Practice now →</span>
+          </a>
+          <a class="path-step" href="https://exercism.org/tracks/python" target="_blank" rel="noopener">
+            <span class="step-num">03</span>
+            <span class="step-kicker">Step 3 · Get mentored</span>
+            <b>Exercism Python Track</b>
+            <span class="step-desc">Real exercises reviewed by volunteer mentors, free forever.</span>
+            <span class="step-go">Join the track →</span>
+          </a>
+        </div>
+        <div class="resource-count">✓ All 14 links verified reachable · Nov 2026</div>
+      </div>
+
       <div class="resource-list">
         <a class="resource reveal" href="https://docs.python.org/3/tutorial/" target="_blank" rel="noopener">
           <span class="emoji">🐍</span>
-          <span><b>Official Python Tutorial</b><span>The language reference and tutorial from python.org.</span></span>
+          <span class="resource-body">
+            <b>Official Python Tutorial</b>
+            <span class="r-desc">The complete language tutorial straight from python.org.</span>
+            <span class="resource-badges"><span class="badge official">Official</span><span class="badge free">Free</span><span class="badge">Beginner</span></span>
+          </span>
           <span class="arrow">↗</span>
         </a>
         <a class="resource reveal" href="https://www.learnpython.org/" target="_blank" rel="noopener">
           <span class="emoji">🎓</span>
-          <span><b>LearnPython.org</b><span>Interactive lessons that run in the browser.</span></span>
+          <span class="resource-body">
+            <b>LearnPython.org</b>
+            <span class="r-desc">Interactive lessons that run in the browser as you read.</span>
+            <span class="resource-badges"><span class="badge free">Free</span><span class="badge">Interactive</span></span>
+          </span>
           <span class="arrow">↗</span>
         </a>
-        <a class="resource reveal" href="https://automatetheboringstuff.com/" target="_blank" rel="noopener">
-          <span class="emoji">🤖</span>
-          <span><b>Automate the Boring Stuff</b><span>Free book focused on practical automation.</span></span>
+        <a class="resource reveal" href="https://realpython.com/" target="_blank" rel="noopener">
+          <span class="emoji">📘</span>
+          <span class="resource-body">
+            <b>Real Python</b>
+            <span class="r-desc">Deep, professional tutorials for every Python topic.</span>
+            <span class="resource-badges"><span class="badge">All levels</span><span class="badge video">Tutorials</span></span>
+          </span>
+          <span class="arrow">↗</span>
+        </a>
+        <a class="resource reveal" href="https://www.programiz.com/python-programming" target="_blank" rel="noopener">
+          <span class="emoji">🌱</span>
+          <span class="resource-body">
+            <b>Programiz</b>
+            <span class="r-desc">Gentle, example-first lessons made for absolute beginners.</span>
+            <span class="resource-badges"><span class="badge free">Free</span><span class="badge">Beginner</span></span>
+          </span>
+          <span class="arrow">↗</span>
+        </a>
+        <a class="resource reveal" href="https://www.sololearn.com/learn/courses/python-introduction" target="_blank" rel="noopener">
+          <span class="emoji">📱</span>
+          <span class="resource-body">
+            <b>SoloLearn — Python Intro</b>
+            <span class="r-desc">Bite-size mobile-friendly course with quizzes and practice.</span>
+            <span class="resource-badges"><span class="badge free">Free</span><span class="badge">Beginner</span></span>
+          </span>
+          <span class="arrow">↗</span>
+        </a>
+        <a class="resource reveal" href="https://www.kaggle.com/learn/python" target="_blank" rel="noopener">
+          <span class="emoji">📊</span>
+          <span class="resource-body">
+            <b>Kaggle Learn: Python</b>
+            <span class="r-desc">Hands-on notebooks with a free certificate when you finish.</span>
+            <span class="resource-badges"><span class="badge free">Free</span><span class="badge cert">Certificate</span></span>
+          </span>
+          <span class="arrow">↗</span>
+        </a>
+        <a class="resource reveal" href="https://www.codecademy.com/learn/learn-python-3" target="_blank" rel="noopener">
+          <span class="emoji">⚙️</span>
+          <span class="resource-body">
+            <b>Codecademy — Learn Python 3</b>
+            <span class="r-desc">Guided interactive course, one of the most popular anywhere.</span>
+            <span class="resource-badges"><span class="badge">Freemium</span><span class="badge">Interactive</span></span>
+          </span>
+          <span class="arrow">↗</span>
+        </a>
+        <a class="resource reveal" href="https://developers.google.com/edu/python" target="_blank" rel="noopener">
+          <span class="emoji">🔎</span>
+          <span class="resource-body">
+            <b>Google's Python Class</b>
+            <span class="r-desc">Google's own free class with videos and coding exercises.</span>
+            <span class="resource-badges"><span class="badge official">Official</span><span class="badge free">Free</span></span>
+          </span>
           <span class="arrow">↗</span>
         </a>
         <a class="resource reveal" href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">
           <span class="emoji">🏫</span>
-          <span><b>CS50P (Harvard)</b><span>A rigorous, free introduction to programming with Python.</span></span>
+          <span class="resource-body">
+            <b>CS50P — Harvard</b>
+            <span class="r-desc">Harvard's rigorous, free intro to programming with Python.</span>
+            <span class="resource-badges"><span class="badge video">Video</span><span class="badge cert">Certificate</span></span>
+          </span>
           <span class="arrow">↗</span>
         </a>
         <a class="resource reveal" href="https://www.freecodecamp.org/learn/scientific-computing-with-python/" target="_blank" rel="noopener">
           <span class="emoji">🧪</span>
-          <span><b>freeCodeCamp</b><span>Project-based Python curriculum with certifications.</span></span>
+          <span class="resource-body">
+            <b>freeCodeCamp</b>
+            <span class="r-desc">Project-based curriculum with free certifications.</span>
+            <span class="resource-badges"><span class="badge free">Free</span><span class="badge cert">Certificate</span></span>
+          </span>
           <span class="arrow">↗</span>
         </a>
         <a class="resource reveal" href="https://exercism.org/tracks/python" target="_blank" rel="noopener">
           <span class="emoji">💪</span>
-          <span><b>Exercism Python Track</b><span>Practice exercises with mentor feedback.</span></span>
+          <span class="resource-body">
+            <b>Exercism Python Track</b>
+            <span class="r-desc">Practice exercises with human mentor feedback.</span>
+            <span class="resource-badges"><span class="badge free">Free</span><span class="badge">Mentored</span></span>
+          </span>
+          <span class="arrow">↗</span>
+        </a>
+        <a class="resource reveal" href="https://automatetheboringstuff.com/" target="_blank" rel="noopener">
+          <span class="emoji">🤖</span>
+          <span class="resource-body">
+            <b>Automate the Boring Stuff</b>
+            <span class="r-desc">Famous free book about automating real everyday tasks.</span>
+            <span class="resource-badges"><span class="badge book">Free book</span><span class="badge">Practical</span></span>
+          </span>
           <span class="arrow">↗</span>
         </a>
       </div>
@@ -1872,6 +2131,15 @@ I am learning functions 🐍</span></code></pre>
         tab.setAttribute('aria-selected', 'true');
         document.querySelectorAll('pre.code').forEach(p => p.classList.remove('active'));
         document.getElementById('tab-' + tab.dataset.tab)?.classList.add('active');
+      });
+    });
+
+    // Resource card cursor spotlight
+    document.querySelectorAll('.resource').forEach(card => {
+      card.addEventListener('pointermove', (e) => {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100).toFixed(1) + '%');
+        card.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100).toFixed(1) + '%');
       });
     });
 

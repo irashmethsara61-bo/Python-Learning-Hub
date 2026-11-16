@@ -12,8 +12,10 @@ An advanced, responsive single-page website that explains **how Python helps peo
 - Tabbed Python code examples
 - Interactive in-browser demo terminal
 - Creator showcase with a cinematic portrait, HUD frame, rotating rays, halftone, scanlines, and gradient name
+- Curated "learn Python online" section with a 3-step fast-start path and 12 verified resource cards (badges, cursor spotlight, all links confirmed reachable)
 - Learning roadmap, language comparison table, project ideas, resources, and FAQ
 - Fully responsive layout with reduced-motion support
+- Inline SVG favicon (gradient "Py" badge)
 
 ## Requirements
 
