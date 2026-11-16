@@ -2,13 +2,13 @@
 
 > **How Python helps people learn programming** — a cinematic, interactive single-page site with real CPython running directly in the browser.
 
-[![Live site](https://img.shields.io/badge/live-GitHub%20Pages-38bdf8?style=flat-square)](https://irashmethsara61-bo.github.io/Irash/)
+[![Live site](https://img.shields.io/badge/live-GitHub%20Pages-38bdf8?style=flat-square)](https://irashmethsara61-bo.github.io/Python-Learning-Hub/)
 [![Lighthouse](https://img.shields.io/badge/Lighthouse-100%2F100%2F100-2ea44f?style=flat-square)](#verification)
 [![Python](https://img.shields.io/badge/Python-3.13.2-3776AB?style=flat-square&logo=python&logoColor=white)](#the-playground)
 [![Rust](https://img.shields.io/badge/Rust-Axum%200.7-000000?style=flat-square&logo=rust&logoColor=white)](#rust-server)
 
-**Live site:** [https://irashmethsara61-bo.github.io/Irash/](https://irashmethsara61-bo.github.io/Irash/)
-**Repository:** [github.com/irashmethsara61-bo/Irash](https://github.com/irashmethsara61-bo/Irash)
+**Live site:** [https://irashmethsara61-bo.github.io/Python-Learning-Hub/](https://irashmethsara61-bo.github.io/Python-Learning-Hub/)
+**Repository:** [github.com/irashmethsara61-bo/Python-Learning-Hub](https://github.com/irashmethsara61-bo/Python-Learning-Hub)
 
 ---
 
@@ -209,8 +209,8 @@ The site honours the operating system’s **reduce-motion** preference. To previ
 
 The repository is served directly from the root of `main`:
 
-- Site: [https://irashmethsara61-bo.github.io/Irash/](https://irashmethsara61-bo.github.io/Irash/)
-- Social card: `https://irashmethsara61-bo.github.io/Irash/assets/og-card.png`
+- Site: [https://irashmethsara61-bo.github.io/Python-Learning-Hub/](https://irashmethsara61-bo.github.io/Python-Learning-Hub/)
+- Social card: `https://irashmethsara61-bo.github.io/Python-Learning-Hub/assets/og-card.png`
 
 Push changes, wait for the Pages build (about a minute), then hard-refresh with `Ctrl + F5` if the old version is cached.
 
