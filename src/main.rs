@@ -1,7 +1,7 @@
 use axum::{
     body::Body,
     http::{header, HeaderMap, HeaderValue, StatusCode},
-    response::{Html, IntoResponse, Response},
+    response::{Html, Response},
     routing::get,
     Router,
 };
@@ -10,8 +10,6 @@ use std::net::SocketAddr;
 /// The website and its media are embedded into the binary at compile time.
 /// Edit `index.html` or `assets/`, then rebuild with `cargo run`.
 const INDEX_HTML: &str = include_str!("../index.html");
-const LOADING_VIDEO: &[u8] = include_bytes!("../assets/loading.mp4");
-const LOADING_POSTER: &[u8] = include_bytes!("../assets/loading-poster.jpg");
 const CREATOR_IMAGE: &[u8] = include_bytes!("../assets/creator.jpg");
 const CREATOR_IMAGE_SM: &[u8] = include_bytes!("../assets/creator-sm.jpg");
 
@@ -20,8 +18,6 @@ async fn main() {
     let app = Router::new()
         .route("/", get(home))
         .route("/index.html", get(home))
-        .route("/assets/loading.mp4", get(loading_video))
-        .route("/assets/loading-poster.jpg", get(loading_poster))
         .route("/assets/creator.jpg", get(creator_image))
         .route("/assets/creator-sm.jpg", get(creator_image_sm))
         .fallback(not_found);
@@ -42,14 +38,6 @@ async fn home() -> Html<&'static str> {
     Html(INDEX_HTML)
 }
 
-async fn loading_video(headers: HeaderMap) -> Response {
-    serve_asset(&headers, LOADING_VIDEO, "video/mp4")
-}
-
-async fn loading_poster(headers: HeaderMap) -> Response {
-    serve_asset(&headers, LOADING_POSTER, "image/jpeg")
-}
-
 async fn creator_image(headers: HeaderMap) -> Response {
     serve_asset(&headers, CREATOR_IMAGE, "image/jpeg")
 }
@@ -58,7 +46,7 @@ async fn creator_image_sm(headers: HeaderMap) -> Response {
     serve_asset(&headers, CREATOR_IMAGE_SM, "image/jpeg")
 }
 
-/// Serve embedded bytes with basic HTTP Range support (needed for smooth video playback).
+/// Serve embedded bytes with basic HTTP Range support.
 fn serve_asset(headers: &HeaderMap, data: &'static [u8], content_type: &'static str) -> Response {
     let total = data.len();
     let cache = HeaderValue::from_static("public, max-age=31536000, immutable");

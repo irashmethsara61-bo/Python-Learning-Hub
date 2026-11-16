@@ -89,8 +89,12 @@
       display: grid;
       place-items: center;
       overflow: hidden;
-      background: #04070f;
       isolation: isolate;
+      background:
+        radial-gradient(circle at 18% 18%, rgba(56, 189, 248, .16), transparent 42%),
+        radial-gradient(circle at 82% 22%, rgba(167, 139, 250, .15), transparent 40%),
+        radial-gradient(circle at 50% 110%, rgba(34, 211, 238, .12), transparent 45%),
+        #04070f;
       transition:
         opacity .85s cubic-bezier(.4, 0, .2, 1),
         visibility .85s,
@@ -104,28 +108,32 @@
       transform: scale(1.04);
       filter: blur(10px);
     }
-    .preloader-video {
+    .preloader-bg {
       position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+      inset: -20%;
       z-index: -3;
-      filter: saturate(1.06) contrast(1.05) brightness(.62);
-      animation: videoDrift 18s ease-out both;
+      background:
+        radial-gradient(circle at 30% 35%, rgba(56, 189, 248, .22), transparent 42%),
+        radial-gradient(circle at 70% 65%, rgba(167, 139, 250, .20), transparent 44%);
+      filter: blur(50px);
+      animation: preloaderDrift 14s ease-in-out infinite alternate;
+      pointer-events: none;
     }
-    @keyframes videoDrift {
-      from { transform: scale(1.09); }
-      to { transform: scale(1); }
+    @keyframes preloaderDrift {
+      from { transform: translate3d(-2%, -1%, 0) scale(1); }
+      to { transform: translate3d(2%, 2%, 0) scale(1.08); }
     }
-    .preloader-scrim {
+    .preloader-grid {
       position: absolute;
       inset: 0;
       z-index: -2;
-      background:
-        radial-gradient(circle at 50% 42%, rgba(56, 189, 248, .20), transparent 44%),
-        radial-gradient(circle at 84% 78%, rgba(167, 139, 250, .18), transparent 42%),
-        linear-gradient(180deg, rgba(4, 7, 15, .88) 0%, rgba(4, 7, 15, .56) 42%, rgba(4, 7, 15, .92) 100%);
+      background-image:
+        linear-gradient(rgba(148, 163, 184, .05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148, 163, 184, .05) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: radial-gradient(circle at center, black 25%, transparent 78%);
+      -webkit-mask-image: radial-gradient(circle at center, black 25%, transparent 78%);
+      pointer-events: none;
     }
     .preloader-grain {
       position: absolute;
@@ -272,12 +280,10 @@
 
     .preloader-controls {
       position: absolute;
-      left: 50%;
+      right: max(1.25rem, env(safe-area-inset-right));
       bottom: max(1.25rem, env(safe-area-inset-bottom));
-      transform: translateX(-50%);
       display: flex;
       align-items: center;
-      gap: .5rem;
       z-index: 2;
     }
     .preloader-btn {
@@ -303,12 +309,6 @@
       outline: 2px solid var(--accent);
       outline-offset: 2px;
     }
-    .preloader-btn[aria-pressed="true"] {
-      color: #04111f;
-      background: linear-gradient(135deg, var(--accent), var(--accent-3));
-      border-color: transparent;
-      font-weight: 700;
-    }
 
     @media (max-width: 520px) {
       .loader-card { padding: 1.9rem 1.25rem 1.55rem; }
@@ -317,12 +317,7 @@
       .loader-logo { width: 84px; height: 84px; border-radius: 24px; }
     }
     @media (prefers-reduced-motion: reduce) {
-      .preloader-video { display: none; }
-      .preloader {
-        background:
-          linear-gradient(180deg, rgba(4, 7, 15, .9), rgba(4, 7, 15, .7)),
-          url("assets/loading-poster.jpg") center / cover no-repeat;
-      }
+      .preloader-bg { animation: none; }
       .loader-ring, .loader-logo, .loader-bar span::after, .loader-card { animation: none; }
       .preloader, .loader-bar span { transition: none; }
       .preloader.hidden { transform: none; filter: none; }
@@ -1202,10 +1197,8 @@
 </head>
 <body class="loading">
   <div class="preloader" id="preloader" role="status" aria-live="polite" aria-label="Loading website">
-    <video class="preloader-video" id="preloaderVideo" autoplay muted loop playsinline preload="auto" poster="assets/loading-poster.jpg" aria-hidden="true">
-      <source src="assets/loading.mp4" type="video/mp4" />
-    </video>
-    <div class="preloader-scrim" aria-hidden="true"></div>
+    <div class="preloader-bg" aria-hidden="true"></div>
+    <div class="preloader-grid" aria-hidden="true"></div>
     <div class="preloader-grain" aria-hidden="true"></div>
 
     <div class="loader-card">
@@ -1224,7 +1217,6 @@
     </div>
 
     <div class="preloader-controls">
-      <button class="preloader-btn" id="soundToggle" type="button" aria-pressed="false" aria-label="Turn sound on">🔇 Sound off</button>
       <button class="preloader-btn" id="skipIntro" type="button">Skip intro →</button>
     </div>
   </div>
@@ -1752,8 +1744,6 @@ I am learning functions 🐍</span></code></pre>
     const loaderProgress = document.getElementById('loaderProgress');
     const loaderPercent = document.getElementById('loaderPercent');
     const loaderStatus = document.getElementById('loaderStatus');
-    const preloaderVideo = document.getElementById('preloaderVideo');
-    const soundToggle = document.getElementById('soundToggle');
     const skipIntro = document.getElementById('skipIntro');
 
     if (preloader && loaderProgress) {
@@ -1793,10 +1783,6 @@ I am learning functions 🐍</span></code></pre>
         clearInterval(statusTimer);
         setProgress(100);
         if (loaderStatus) loaderStatus.textContent = 'Ready';
-        if (preloaderVideo) {
-          preloaderVideo.pause();
-          preloaderVideo.muted = true;
-        }
         setTimeout(() => {
           preloader.classList.add('hidden');
           document.body.classList.remove('loading');
@@ -1812,23 +1798,6 @@ I am learning functions 🐍</span></code></pre>
       setTimeout(finishLoading, 6500);
 
       skipIntro?.addEventListener('click', finishLoading);
-
-      soundToggle?.addEventListener('click', () => {
-        if (!preloaderVideo) return;
-        const turnOn = preloaderVideo.muted;
-        preloaderVideo.muted = !turnOn;
-        preloaderVideo.volume = 0.65;
-        soundToggle.setAttribute('aria-pressed', String(turnOn));
-        soundToggle.setAttribute('aria-label', turnOn ? 'Turn sound off' : 'Turn sound on');
-        soundToggle.textContent = turnOn ? '🔊 Sound on' : '🔇 Sound off';
-        if (turnOn) {
-          preloaderVideo.play().catch(() => {});
-        }
-      });
-
-      preloaderVideo?.addEventListener('error', () => {
-        if (soundToggle) soundToggle.style.display = 'none';
-      });
     }
 
     // Mobile navigation
