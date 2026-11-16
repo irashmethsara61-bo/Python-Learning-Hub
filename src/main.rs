@@ -12,6 +12,8 @@ use std::net::SocketAddr;
 const INDEX_HTML: &str = include_str!("../index.html");
 const LOADING_VIDEO: &[u8] = include_bytes!("../assets/loading.mp4");
 const LOADING_POSTER: &[u8] = include_bytes!("../assets/loading-poster.jpg");
+const CREATOR_IMAGE: &[u8] = include_bytes!("../assets/creator.jpg");
+const CREATOR_IMAGE_SM: &[u8] = include_bytes!("../assets/creator-sm.jpg");
 
 #[tokio::main]
 async fn main() {
@@ -20,6 +22,8 @@ async fn main() {
         .route("/index.html", get(home))
         .route("/assets/loading.mp4", get(loading_video))
         .route("/assets/loading-poster.jpg", get(loading_poster))
+        .route("/assets/creator.jpg", get(creator_image))
+        .route("/assets/creator-sm.jpg", get(creator_image_sm))
         .fallback(not_found);
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
@@ -44,6 +48,14 @@ async fn loading_video(headers: HeaderMap) -> Response {
 
 async fn loading_poster(headers: HeaderMap) -> Response {
     serve_asset(&headers, LOADING_POSTER, "image/jpeg")
+}
+
+async fn creator_image(headers: HeaderMap) -> Response {
+    serve_asset(&headers, CREATOR_IMAGE, "image/jpeg")
+}
+
+async fn creator_image_sm(headers: HeaderMap) -> Response {
+    serve_asset(&headers, CREATOR_IMAGE_SM, "image/jpeg")
 }
 
 /// Serve embedded bytes with basic HTTP Range support (needed for smooth video playback).

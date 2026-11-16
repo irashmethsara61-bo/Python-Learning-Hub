@@ -11,6 +11,7 @@ A Rust web application that serves an advanced, responsive website explaining ho
 - Animated stat counters
 - Tabbed Python code examples
 - Interactive in-browser demo terminal
+- Epic creator showcase with a cinematic portrait treatment, HUD frame, and halftone effects
 - Learning roadmap, language comparison table, project ideas, resources, and FAQ
 - Fully responsive layout
 
@@ -37,6 +38,8 @@ Stop the server with `Ctrl + C`.
 - `index.html` — the complete website (HTML, CSS, JS, interactive demo)
 - `assets/loading.mp4` — the loading-screen background video
 - `assets/loading-poster.jpg` — poster frame shown before the video starts
+- `assets/creator.jpg` — the creator portrait (1400px)
+- `assets/creator-sm.jpg` — smaller portrait used in the responsive `srcset`
 - `README.md` — these instructions
 
 ## Editing the site

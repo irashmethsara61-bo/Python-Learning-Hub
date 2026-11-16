@@ -812,6 +812,321 @@
     .resource span { color: var(--muted); font-size: 0.86rem; }
     .resource .arrow { margin-left: auto; color: var(--accent); }
 
+    /* ---------- Creator ---------- */
+    .creator-section {
+      position: relative;
+      padding: 3.2rem 0 2.4rem;
+      overflow: hidden;
+    }
+    .creator-ghost {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: clamp(5rem, 17vw, 14rem);
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      line-height: 1;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(56, 189, 248, .12);
+      white-space: nowrap;
+      pointer-events: none;
+      user-select: none;
+      z-index: 0;
+    }
+    .creator-shell {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 0.88fr 1.12fr;
+      gap: clamp(1.5rem, 3vw, 2.6rem);
+      align-items: center;
+      padding: clamp(1.2rem, 3vw, 2rem);
+      border-radius: 30px;
+      border: 1px solid rgba(148, 163, 184, .2);
+      background:
+        radial-gradient(circle at 14% 16%, rgba(56, 189, 248, .14), transparent 38%),
+        radial-gradient(circle at 88% 84%, rgba(167, 139, 250, .15), transparent 40%),
+        linear-gradient(150deg, rgba(15, 23, 42, .92), rgba(6, 10, 21, .96));
+      box-shadow:
+        0 50px 120px rgba(0, 0, 0, .55),
+        inset 0 1px 0 rgba(255, 255, 255, .06);
+      overflow: hidden;
+    }
+    .creator-shell::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), var(--accent-2), transparent);
+      opacity: .85;
+    }
+    .creator-shell::after {
+      content: "";
+      position: absolute;
+      top: -30%;
+      left: -10%;
+      width: 55%;
+      height: 80%;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(56, 189, 248, .12), transparent 68%);
+      filter: blur(30px);
+      pointer-events: none;
+    }
+    .creator-visual {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem 0;
+    }
+    .creator-rays {
+      position: absolute;
+      width: 132%;
+      aspect-ratio: 1;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background: repeating-conic-gradient(
+        from 0deg,
+        rgba(56, 189, 248, .10) 0deg 3deg,
+        transparent 3deg 15deg
+      );
+      mask-image: radial-gradient(circle, black 0%, transparent 68%);
+      -webkit-mask-image: radial-gradient(circle, black 0%, transparent 68%);
+      opacity: .55;
+      pointer-events: none;
+      animation: raysSpin 70s linear infinite;
+    }
+    @keyframes raysSpin {
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+    .creator-halo {
+      position: absolute;
+      width: 92%;
+      aspect-ratio: 1;
+      top: 4%;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(56, 189, 248, .32), rgba(167, 139, 250, .14) 45%, transparent 68%);
+      filter: blur(26px);
+      animation: haloPulse 5.5s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes haloPulse {
+      0%, 100% { opacity: .7; transform: translateX(-50%) scale(1); }
+      50% { opacity: 1; transform: translateX(-50%) scale(1.09); }
+    }
+    .creator-frame {
+      position: relative;
+      width: min(370px, 86%);
+      padding: 2px;
+      background: linear-gradient(145deg, rgba(56, 189, 248, .95), rgba(167, 139, 250, .55) 42%, rgba(56, 189, 248, .18) 72%, rgba(167, 139, 250, .85));
+      clip-path: polygon(0 34px, 34px 0, 100% 0, 100% calc(100% - 54px), calc(100% - 54px) 100%, 0 100%);
+      filter: drop-shadow(0 30px 60px rgba(0, 0, 0, .55)) drop-shadow(0 0 28px rgba(56, 189, 248, .16));
+      transition: transform .5s cubic-bezier(.16, 1, .3, 1), filter .5s;
+    }
+    .creator-frame:hover {
+      transform: translateY(-4px);
+      filter: drop-shadow(0 36px 70px rgba(0, 0, 0, .6)) drop-shadow(0 0 36px rgba(56, 189, 248, .26));
+    }
+    .creator-photo {
+      position: relative;
+      aspect-ratio: 3 / 4;
+      overflow: hidden;
+      clip-path: polygon(0 34px, 34px 0, 100% 0, 100% calc(100% - 54px), calc(100% - 54px) 100%, 0 100%);
+      background: #050a14;
+    }
+    .creator-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 50% 22%;
+      filter: contrast(1.06) saturate(1.04) brightness(.92);
+      transform: scale(1.02);
+      transition: transform .9s cubic-bezier(.16, 1, .3, 1), filter .6s ease;
+    }
+    .creator-frame:hover .creator-photo img {
+      transform: scale(1.07);
+      filter: contrast(1.09) saturate(1.12) brightness(1);
+    }
+    .creator-grade,
+    .creator-vignette,
+    .creator-halftone,
+    .creator-scan {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .creator-grade {
+      background: linear-gradient(130deg, rgba(56, 189, 248, .32), transparent 46%, rgba(167, 139, 250, .34));
+      mix-blend-mode: soft-light;
+      opacity: .7;
+      z-index: 1;
+    }
+    .creator-vignette {
+      background: radial-gradient(circle at 50% 34%, transparent 36%, rgba(4, 7, 15, .5) 78%, rgba(4, 7, 15, .85) 100%);
+      z-index: 2;
+    }
+    .creator-halftone {
+      background-image: radial-gradient(rgba(4, 7, 15, .7) 1px, transparent 1.35px);
+      background-size: 5px 5px;
+      opacity: .22;
+      mix-blend-mode: multiply;
+      mask-image: radial-gradient(circle at 50% 28%, black, transparent 72%);
+      -webkit-mask-image: radial-gradient(circle at 50% 28%, black, transparent 72%);
+      z-index: 3;
+    }
+    .creator-scan {
+      background: repeating-linear-gradient(0deg, rgba(255, 255, 255, .05) 0 1px, transparent 1px 3px);
+      opacity: .28;
+      mix-blend-mode: overlay;
+      z-index: 3;
+    }
+    .creator-corner {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-color: rgba(56, 189, 248, .9);
+      border-style: solid;
+      z-index: 4;
+      pointer-events: none;
+    }
+    .creator-corner.tl { top: 10px; left: 44px; border-width: 2px 0 0 2px; }
+    .creator-corner.tr { top: 10px; right: 12px; border-width: 2px 2px 0 0; }
+    .creator-corner.bl { bottom: 10px; left: 12px; border-width: 0 0 2px 2px; }
+    .creator-corner.br { bottom: 60px; right: 12px; border-width: 0 2px 2px 0; }
+    .creator-photo-label {
+      position: absolute;
+      left: 16px;
+      bottom: 16px;
+      z-index: 5;
+      font-size: .62rem;
+      font-weight: 700;
+      letter-spacing: .22em;
+      color: rgba(255, 255, 255, .85);
+      padding: .28rem .6rem;
+      border: 1px solid rgba(255, 255, 255, .22);
+      border-radius: 999px;
+      background: rgba(4, 7, 15, .48);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .creator-spark {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent), 0 0 20px rgba(56, 189, 248, .45);
+      opacity: 0;
+      animation: sparkFloat 6.5s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .creator-spark.s1 { left: 4%; top: 28%; animation-delay: 0s; }
+    .creator-spark.s2 { right: 6%; top: 20%; animation-delay: 1.2s; background: var(--accent-2); box-shadow: 0 0 10px var(--accent-2); }
+    .creator-spark.s3 { left: 10%; bottom: 22%; animation-delay: 2.4s; }
+    .creator-spark.s4 { right: 3%; bottom: 34%; animation-delay: 3.4s; background: var(--accent-2); box-shadow: 0 0 10px var(--accent-2); }
+    .creator-spark.s5 { left: 46%; top: 2%; animation-delay: 4.2s; }
+    @keyframes sparkFloat {
+      0%, 100% { opacity: 0; transform: translateY(10px) scale(.6); }
+      45% { opacity: .85; }
+      60% { opacity: .85; transform: translateY(-16px) scale(1); }
+    }
+    .creator-info { position: relative; z-index: 2; padding: .5rem .3rem; }
+    .creator-status {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: #b9f8e0;
+      border: 1px solid rgba(52, 211, 153, .3);
+      background: rgba(52, 211, 153, .08);
+      border-radius: 999px;
+      padding: .3rem .65rem;
+      margin-bottom: .9rem;
+    }
+    .creator-kicker {
+      display: flex;
+      align-items: center;
+      gap: .45rem;
+      color: var(--accent);
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      margin-bottom: .45rem;
+    }
+    .creator-name {
+      font-size: clamp(2.8rem, 6.5vw, 4.9rem);
+      font-weight: 900;
+      line-height: .92;
+      letter-spacing: -.045em;
+      margin-bottom: .55rem;
+      background: linear-gradient(100deg, #ffffff 18%, #bfeeff 48%, var(--accent) 72%, var(--accent-2) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .creator-role {
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+    .creator-desc {
+      color: var(--muted);
+      font-size: .98rem;
+      max-width: 58ch;
+      margin-bottom: 1.35rem;
+    }
+    .creator-desc strong { color: #e9f5ff; }
+    .creator-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .6rem;
+      margin-bottom: 1.45rem;
+    }
+    .creator-stat {
+      min-width: 112px;
+      padding: .62rem .8rem;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, .03);
+    }
+    .creator-stat b {
+      display: block;
+      font-size: 1.04rem;
+      color: #fff;
+      letter-spacing: -.01em;
+    }
+    .creator-stat span {
+      color: var(--muted);
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .creator-actions { display: flex; gap: .7rem; flex-wrap: wrap; }
+    @media (max-width: 1020px) {
+      .creator-shell { grid-template-columns: 1fr; text-align: center; }
+      .creator-info { display: flex; flex-direction: column; align-items: center; }
+      .creator-desc { margin-left: auto; margin-right: auto; }
+      .creator-actions, .creator-stats, .creator-kicker { justify-content: center; }
+      .creator-frame { width: min(340px, 76vw); }
+      .creator-ghost { font-size: 22vw; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .creator-halo, .creator-spark, .creator-rays { animation: none; }
+      .creator-frame, .creator-photo img { transition: none; }
+    }
+
     /* ---------- FAQ ---------- */
     .faq { display: grid; gap: 0.7rem; }
     details {
@@ -935,6 +1250,7 @@
         <a href="#example">Code</a>
         <a href="#demo">Try It</a>
         <a href="#roadmap">Roadmap</a>
+        <a href="#creator">Creator</a>
         <a href="#faq">FAQ</a>
         <a class="nav-cta" href="https://github.com/irashmethsara61-bo/Irash" target="_blank" rel="noopener">GitHub ↗</a>
       </div>
@@ -1317,6 +1633,63 @@ I am learning functions 🐍</span></code></pre>
       </div>
     </section>
 
+    <section id="creator" class="creator-section">
+      <div class="creator-ghost" aria-hidden="true">CREATOR</div>
+      <div class="creator-shell reveal">
+        <div class="creator-visual">
+          <div class="creator-rays" aria-hidden="true"></div>
+          <div class="creator-halo" aria-hidden="true"></div>
+          <figure class="creator-frame">
+            <div class="creator-photo">
+              <img
+                src="assets/creator.jpg"
+                srcset="assets/creator-sm.jpg 700w, assets/creator.jpg 1400w"
+                sizes="(max-width: 1020px) 76vw, 370px"
+                alt="Portrait of Irash, the creator of the Python Learning Hub"
+                width="1400"
+                height="1867"
+                loading="lazy"
+              />
+              <div class="creator-grade" aria-hidden="true"></div>
+              <div class="creator-halftone" aria-hidden="true"></div>
+              <div class="creator-vignette" aria-hidden="true"></div>
+              <div class="creator-scan" aria-hidden="true"></div>
+              <span class="creator-corner tl" aria-hidden="true"></span>
+              <span class="creator-corner tr" aria-hidden="true"></span>
+              <span class="creator-corner bl" aria-hidden="true"></span>
+              <span class="creator-corner br" aria-hidden="true"></span>
+              <div class="creator-photo-label">THE CREATOR</div>
+            </div>
+          </figure>
+          <span class="creator-spark s1" aria-hidden="true"></span>
+          <span class="creator-spark s2" aria-hidden="true"></span>
+          <span class="creator-spark s3" aria-hidden="true"></span>
+          <span class="creator-spark s4" aria-hidden="true"></span>
+          <span class="creator-spark s5" aria-hidden="true"></span>
+        </div>
+
+        <div class="creator-info">
+          <div class="creator-status"><span class="pulse-dot"></span> Online • Building</div>
+          <div class="creator-kicker">⚡ The mind behind the hub</div>
+          <h2 class="creator-name">IRASH</h2>
+          <div class="creator-role">Creator • Developer • Python enthusiast</div>
+          <p class="creator-desc">
+            The creator and builder behind this learning hub. This site exists to make programming feel
+            less intimidating—<strong>clear examples, real practice, and a path that starts with curiosity.</strong>
+          </p>
+          <div class="creator-stats">
+            <div class="creator-stat"><b>01</b><span>Mission</span></div>
+            <div class="creator-stat"><b>∞</b><span>Curiosity</span></div>
+            <div class="creator-stat"><b>100%</b><span>Beginner-first</span></div>
+          </div>
+          <div class="creator-actions">
+            <a class="btn btn-primary" href="https://github.com/irashmethsara61-bo" target="_blank" rel="noopener">Connect on GitHub ↗</a>
+            <a class="btn btn-secondary" href="#why">Explore the Hub</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section id="faq">
       <div class="section-head reveal">
         <span class="kicker">Common questions</span>
@@ -1366,6 +1739,7 @@ I am learning functions 🐍</span></code></pre>
       <div class="footer-links">
         <a href="#why">Why Python</a>
         <a href="#roadmap">Roadmap</a>
+        <a href="#creator">Creator</a>
         <a href="#resources">Resources</a>
         <a href="https://github.com/irashmethsara61-bo/Irash" target="_blank" rel="noopener">GitHub ↗</a>
       </div>
