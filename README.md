@@ -6,7 +6,7 @@ A Rust web application that serves an advanced, responsive website explaining ho
 
 ## Highlights
 
-- Animated loading screen with progress bar
+- Cinematic loading screen with background video, animated progress, sound toggle, and skip control
 - Modern dark UI with gradient orbs, glass navbar, and scroll-reveal animations
 - Animated stat counters
 - Tabbed Python code examples
@@ -33,14 +33,16 @@ Stop the server with `Ctrl + C`.
 ## Project structure
 
 - `Cargo.toml` — Rust project configuration
-- `src/main.rs` — Axum web server; embeds `index.html` at compile time
-- `index.html` — the complete website (HTML, CSS, JS, loading screen, demo)
+- `src/main.rs` — Axum web server; embeds `index.html` and the loading media at compile time, with HTTP Range support for video
+- `index.html` — the complete website (HTML, CSS, JS, interactive demo)
+- `assets/loading.mp4` — the loading-screen background video
+- `assets/loading-poster.jpg` — poster frame shown before the video starts
 - `README.md` — these instructions
 
 ## Editing the site
 
-1. Edit `index.html`.
-2. Restart `cargo run` (the HTML is embedded with `include_str!`, so a rebuild is required).
+1. Edit `index.html` and/or replace the files in `assets/`.
+2. Restart `cargo run` (the HTML and media are embedded at compile time, so a rebuild is required).
 
 ## Deployment
 
