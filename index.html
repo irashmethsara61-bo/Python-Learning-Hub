@@ -1893,12 +1893,12 @@ I am learning functions 🐍</span></code></pre>
       const rawName = nameInput.value.trim();
       const name = rawName || 'learner';
       const script = [
-        { type: 'cmd', text: '>>> name = "' + name + '"' },
-        { type: 'cmd', text: '>>> print(f"Hello, {name}!")' },
+        { type: 'cmd', text: 'name = "' + name + '"' },
+        { type: 'cmd', text: 'print(f"Hello, {name}!")' },
         { type: 'result', text: 'Hello, ' + name + '!' },
-        { type: 'cmd', text: '>>> print("You just ran your first Python-style program.")' },
+        { type: 'cmd', text: 'print("You just ran your first Python-style program.")' },
         { type: 'result', text: 'You just ran your first Python-style program.' },
-        { type: 'cmd', text: '>>> print("Next: variables, loops, functions…")' },
+        { type: 'cmd', text: 'print("Next: variables, loops, functions…")' },
         { type: 'result', text: 'Next: variables, loops, functions…' }
       ];
       writeTerminal('');
