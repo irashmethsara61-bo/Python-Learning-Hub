@@ -80,6 +80,75 @@
     a { color: var(--accent); }
     code, pre, .mono { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
 
+    /* ---------- Loading screen ---------- */
+    body.loading { overflow: hidden; }
+    .preloader {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 50% 35%, rgba(56,189,248,0.18), transparent 40%),
+        radial-gradient(circle at 75% 70%, rgba(167,139,250,0.14), transparent 38%),
+        #060a15;
+      transition: opacity .6s ease, visibility .6s ease;
+    }
+    .preloader.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .loader-card { text-align: center; padding: 1rem; }
+    .loader-logo {
+      width: 76px; height: 76px;
+      margin: 0 auto 1.1rem;
+      border-radius: 22px;
+      display: grid; place-items: center;
+      font-size: 1.55rem;
+      font-weight: 900;
+      color: #04111f;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 18px 45px rgba(56,189,248,0.35);
+      animation: loaderPulse 1.7s ease-in-out infinite;
+    }
+    @keyframes loaderPulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 18px 45px rgba(56,189,248,0.30); }
+      50% { transform: scale(1.07); box-shadow: 0 22px 55px rgba(167,139,250,0.42); }
+    }
+    .loader-title {
+      font-size: 1.12rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      margin-bottom: 1.1rem;
+    }
+    .loader-bar {
+      width: min(320px, 72vw);
+      height: 6px;
+      margin: 0 auto 0.8rem;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      overflow: hidden;
+    }
+    .loader-bar span {
+      display: block;
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      box-shadow: 0 0 16px rgba(56,189,248,0.75);
+      transition: width .2s ease;
+    }
+    .loader-status {
+      color: var(--muted);
+      font-size: 0.84rem;
+      letter-spacing: 0.04em;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .loader-logo { animation: none; }
+      .preloader, .loader-bar span { transition: none; }
+    }
+
     /* ---------- Nav ---------- */
     nav {
       position: sticky;
@@ -637,7 +706,22 @@
     }
   </style>
 </head>
-<body>
+<body class="loading">
+  <div class="preloader" id="preloader" role="status" aria-live="polite" aria-label="Loading website">
+    <div class="loader-card">
+      <div class="loader-logo">Py</div>
+      <div class="loader-title">Python Learning Hub</div>
+      <div class="loader-bar" aria-hidden="true"><span id="loaderProgress"></span></div>
+      <div class="loader-status" id="loaderStatus">Preparing your learning experience…</div>
+    </div>
+  </div>
+  <noscript>
+    <style>
+      .preloader { display: none !important; }
+      body.loading { overflow: auto !important; }
+    </style>
+  </noscript>
+
   <div class="bg-grid" aria-hidden="true"></div>
   <div class="orb a" aria-hidden="true"></div>
   <div class="orb b" aria-hidden="true"></div>
@@ -1091,6 +1175,41 @@ I am learning functions 🐍</span></code></pre>
   </footer>
 
   <script>
+    // Loading screen
+    const preloader = document.getElementById('preloader');
+    const loaderProgress = document.getElementById('loaderProgress');
+    const loaderStatus = document.getElementById('loaderStatus');
+    if (preloader && loaderProgress) {
+      let loaderFinished = false;
+      const loaderStarted = Date.now();
+      const progressTimer = setInterval(() => {
+        const current = parseFloat(loaderProgress.style.width) || 0;
+        if (current < 92) {
+          loaderProgress.style.width = Math.min(current + Math.random() * 16 + 5, 92) + '%';
+        }
+      }, 140);
+
+      const finishLoading = () => {
+        if (loaderFinished) return;
+        loaderFinished = true;
+        clearInterval(progressTimer);
+        loaderProgress.style.width = '100%';
+        if (loaderStatus) loaderStatus.textContent = 'Ready!';
+        setTimeout(() => {
+          preloader.classList.add('hidden');
+          document.body.classList.remove('loading');
+          setTimeout(() => { preloader.style.display = 'none'; }, 700);
+        }, 380);
+      };
+
+      window.addEventListener('load', () => {
+        const elapsed = Date.now() - loaderStarted;
+        setTimeout(finishLoading, Math.max(0, 900 - elapsed));
+      });
+      // Safety net so the page is never blocked
+      setTimeout(finishLoading, 4000);
+    }
+
     // Mobile navigation
     const navToggle = document.getElementById('navToggle');
     const navLinks = document.getElementById('navLinks');
