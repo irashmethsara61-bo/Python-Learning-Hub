@@ -6,8 +6,9 @@ An advanced, responsive single-page website that explains **how Python helps peo
 
 ## Highlights
 
-- Animated, video-free loading screen with a glass card, rotating gradient ring, progress bar, staged status text, and a skip control
-- Dark "epic" UI with gradient orbs, glass navigation, and scroll-reveal animations
+- **Animated, video-free loading screen** — glass card, rotating gradient ring, progress bar, staged status text, and a skip control
+- **Motion system**: scroll progress bar, sticky-nav state, scroll-spy active links, staggered scroll reveals, gradient shimmer, button shine, card lifts, animated mobile menu, code-tab cross-fades, quiz-option stagger, timeline completion pulse, terminal line fade-in, and a back-to-top control
+- Dark "epic" UI with gradient orbs, glass navigation, and smooth micro-interactions — mostly transform/opacity based, rAF-throttled, with reduced-motion fallbacks
 - Animated hero statistics
 - **7 professional code example tabs** in a mock editor window: Hello World, Loops, Functions, Lists, FizzBuzz, Objects, and Files
 - **Real Python playground** — genuine CPython (3.13) in the browser via Pyodide, lazy-loaded on demand, with stdout/stderr capture, expression results, Ctrl+Enter to run, and Tab indenting
@@ -18,14 +19,17 @@ An advanced, responsive single-page website that explains **how Python helps peo
 - Epic creator showcase with a cinematic portrait, HUD frame, rotating rays, halftone, scanlines, and gradient name
 - Curated "learn Python online" section with a 3-step fast-start path and 12 verified resource cards (badges, cursor spotlight, all links confirmed reachable)
 - Learning roadmap, language comparison table, project ideas, resources, and FAQ
-- Fully responsive layout with reduced-motion support
+- Accessible by design: skip-to-content link, visible focus states, sequential headings, and full `prefers-reduced-motion` support
+- Optimized runtime: zero inline `style` attributes, cached DOM collections, one layout read per pointer frame, passive scroll listeners, and compositor-friendly animations
 - Inline SVG favicon (gradient "Py" badge)
 
 ## Audit status
 
 - Video loading screen fully removed (no `<video>` / `loading.mp4` / poster references remain)
 - Full static audit passed: HTML structure, CSS, JS wiring, anchors, images, Rust includes/routes
-- Runtime verified in browser: 0 console errors, all tabs functional, loader + skip + demo terminal working, no broken images
+- Lighthouse: **Accessibility 100 · Best Practices 100 · SEO 100** (no failed audits)
+- Runtime verified in browser: 0 console errors; loader/skip, playground (CPython 3.13.2), quiz, roadmap persistence, scroll progress, nav scroll spy, mobile menu, and back-to-top all functional
+- Navigation collapses to an animated mobile menu at 1040px to prevent crowding on laptops
 - All external resource links checked and confirmed reachable
 
 ## Requirements

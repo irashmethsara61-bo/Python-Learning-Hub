@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="How Python helps people learn programming: why it is beginner-friendly, real code examples, a learning roadmap, project ideas, and free resources." />
   <meta name="theme-color" content="#060a15" />
+  <meta name="color-scheme" content="dark" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%2338bdf8'/><stop offset='1' stop-color='%23a78bfa'/></linearGradient></defs><rect width='64' height='64' rx='14' fill='url(%23g)'/><text x='32' y='43' font-family='Arial,sans-serif' font-size='30' font-weight='900' text-anchor='middle' fill='%23041120'>Py</text></svg>" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Python Learning Hub" />
@@ -347,6 +349,12 @@
       -webkit-backdrop-filter: blur(16px);
       background: rgba(6, 10, 21, 0.62);
       border-bottom: 1px solid var(--border);
+      transition: background-color .3s ease, box-shadow .3s ease, border-color .3s ease;
+    }
+    nav.scrolled {
+      background: rgba(6, 10, 21, 0.9);
+      border-bottom-color: rgba(56, 189, 248, 0.18);
+      box-shadow: 0 12px 34px rgba(0, 0, 0, 0.38);
     }
     .nav-inner {
       display: flex;
@@ -374,17 +382,32 @@
       box-shadow: 0 8px 22px rgba(56,189,248,0.28);
     }
     .nav-links {
-      display: flex; align-items: center; gap: 1.1rem;
-      font-size: 0.93rem;
+      display: flex; align-items: center; gap: 0.8rem;
+      font-size: 0.9rem;
     }
-    .nav-links a { color: var(--muted); text-decoration: none; transition: color .2s ease; }
-    .nav-links a:hover, .nav-links a:focus-visible { color: var(--text); }
+    .nav-links a { position: relative; color: var(--muted); text-decoration: none; white-space: nowrap; transition: color .2s ease; }
+    .nav-links a:hover, .nav-links a:focus-visible, .nav-links a.active { color: var(--text); }
+    .nav-links a:not(.nav-cta)::after {
+      content: "";
+      position: absolute;
+      left: 0; right: 0; bottom: -6px;
+      height: 2px;
+      border-radius: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      transform: scaleX(0);
+      transform-origin: 0 50%;
+      transition: transform .3s cubic-bezier(.22, 1, .36, 1);
+    }
+    .nav-links a:not(.nav-cta):hover::after,
+    .nav-links a:not(.nav-cta):focus-visible::after,
+    .nav-links a.active::after { transform: scaleX(1); }
     .nav-cta {
       padding: 0.5rem 0.9rem;
       border-radius: 10px;
       border: 1px solid var(--border-strong);
       background: rgba(255,255,255,0.04);
       color: var(--text) !important;
+      white-space: nowrap;
     }
     .nav-toggle {
       display: none;
@@ -396,7 +419,7 @@
       font-size: 1.15rem;
       cursor: pointer;
     }
-    @media (max-width: 820px) {
+    @media (max-width: 1040px) {
       .nav-toggle { display: block; }
       .nav-links {
         position: absolute;
@@ -405,16 +428,29 @@
         align-items: flex-start;
         gap: 0.35rem;
         padding: 0.8rem 1rem 1rem;
-        background: rgba(6, 10, 21, 0.97);
+        background: #060a15;
+        box-shadow: 0 24px 40px rgba(0, 0, 0, .45);
         border-bottom: 1px solid var(--border);
-        display: none;
+        display: flex;
+        visibility: hidden;
+        opacity: 0;
+        transform: translateY(-6px);
+        pointer-events: none;
+        transition: opacity .25s ease, transform .3s cubic-bezier(.22, 1, .36, 1), visibility .3s;
       }
-      .nav-links.open { display: flex; }
+      .nav-links.open { visibility: visible; opacity: 1; transform: none; pointer-events: auto; }
       .nav-links a { padding: 0.45rem 0.2rem; width: 100%; }
     }
 
     /* ---------- Reveal ---------- */
-    .reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s ease, transform .7s ease; }
+    .reveal {
+      opacity: 0;
+      transform: translateY(22px);
+      transition:
+        opacity .7s cubic-bezier(.22, 1, .36, 1),
+        transform .7s cubic-bezier(.22, 1, .36, 1);
+      transition-delay: var(--d, 0s);
+    }
     .reveal.visible { opacity: 1; transform: none; }
     @media (prefers-reduced-motion: reduce) {
       .reveal { opacity: 1; transform: none; transition: none; }
@@ -483,6 +519,9 @@
     }
     .btn:hover { transform: translateY(-2px); }
     .btn-primary {
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
       color: #04111f;
       background: linear-gradient(135deg, var(--accent), var(--accent-3));
       border: none;
@@ -608,7 +647,7 @@
       border-radius: var(--radius);
       padding: 1.3rem;
       box-shadow: var(--shadow);
-      transition: transform .25s ease, border-color .25s ease, background .25s ease;
+      transition: transform .28s cubic-bezier(.22, 1, .36, 1), border-color .28s ease, background .28s ease, box-shadow .28s ease;
     }
     .card:hover {
       transform: translateY(-4px);
@@ -677,7 +716,7 @@
       border-radius: 8px;
       padding: 0.26rem 0.6rem;
       cursor: pointer;
-      transition: all .18s ease;
+      transition: color .18s ease, background .18s ease, border-color .18s ease, transform .18s ease;
     }
     .tab:hover { color: var(--text); background: rgba(255,255,255,0.05); }
     .tab.active {
@@ -699,6 +738,7 @@
     /* ---------- Demo ---------- */
     .demo-grid { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 1rem; align-items: stretch; }
     .demo-form { display: flex; flex-direction: column; gap: 0.65rem; }
+    .demo-hint { margin-bottom: .9rem; }
     label { font-size: 0.88rem; color: var(--muted); }
     input[type="text"] {
       width: 100%;
@@ -771,7 +811,7 @@
       color: var(--accent);
       margin-bottom: 0.15rem;
     }
-    .tl-item h4 { font-size: 1.04rem; margin-bottom: 0.15rem; }
+    .tl-item h3 { font-size: 1.04rem; margin: 0 0 0.15rem; }
     .tl-item p { color: var(--muted); font-size: 0.93rem; max-width: 80ch; }
 
     /* ---------- Table ---------- */
@@ -985,7 +1025,7 @@
       background: rgba(255, 255, 255, .02);
       flex-wrap: wrap;
     }
-    .pg-filename { margin-left: .35rem; font-size: .82rem; color: var(--muted); }
+    .filename { margin-left: .35rem; font-size: .82rem; color: var(--muted); }
     .pg-status {
       display: inline-flex; align-items: center; gap: .4rem;
       font-size: .7rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
@@ -1128,7 +1168,7 @@
       transform: rotate(45deg);
     }
     .tl-check input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-    .tl-item.done h4 { color: var(--success); }
+    .tl-item.done h3 { color: var(--success); }
     .tl-item.done::before { background: var(--success); box-shadow: 0 0 0 4px rgba(52, 211, 153, .15); }
     @media (prefers-reduced-motion: reduce) {
       .rp-bar span, .tl-check input { transition: none; }
@@ -1520,9 +1560,155 @@
       .hero { padding-top: 3.2rem; }
       .panel-stats { grid-template-columns: 1fr 1fr; }
     }
+
+    /* ---------- Motion & micro-interactions ---------- */
+    .scroll-progress {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      z-index: 60;
+      pointer-events: none;
+    }
+    .scroll-progress span {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2) 55%, var(--accent-3));
+      box-shadow: 0 0 14px rgba(56, 189, 248, .65);
+      transform: scaleX(0);
+      transform-origin: 0 50%;
+      transition: transform .1s linear;
+    }
+
+    .gradient-text,
+    .creator-name,
+    .big-stat .num {
+      background-size: 220% auto;
+      animation: gradientShift 9s ease-in-out infinite alternate;
+    }
+    @keyframes gradientShift {
+      from { background-position: 0% 50%; }
+      to { background-position: 100% 50%; }
+    }
+
+    .btn-primary::after {
+      content: "";
+      position: absolute;
+      top: -60%; bottom: -60%;
+      left: -45%;
+      width: 38%;
+      background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .5), transparent);
+      transform: skewX(-18deg);
+      transition: transform .65s cubic-bezier(.22, 1, .36, 1);
+      pointer-events: none;
+    }
+    .btn-primary:hover::after,
+    .btn-primary:focus-visible::after { transform: skewX(-18deg) translateX(420%); }
+
+    .icon { transition: transform .25s cubic-bezier(.22, 1, .36, 1), border-color .25s ease; }
+    .card:hover { box-shadow: 0 30px 70px rgba(0, 0, 0, .5); }
+    .card:hover .icon { transform: translateY(-2px) scale(1.08); }
+    .mini-card .emoji { transition: transform .25s cubic-bezier(.22, 1, .36, 1); }
+    .mini-card:hover .emoji { transform: translateY(-2px) scale(1.08); }
+    .big-stat { transition: transform .3s cubic-bezier(.22, 1, .36, 1), border-color .3s ease; }
+    .big-stat:hover { transform: translateY(-3px); border-color: rgba(56, 189, 248, .3); }
+
+    .tab:active { transform: scale(.95); }
+    pre.code.active { animation: panelIn .32s cubic-bezier(.22, 1, .36, 1) backwards; }
+    @keyframes panelIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .quiz-option {
+      animation: optionIn .4s cubic-bezier(.22, 1, .36, 1) backwards;
+      animation-delay: calc(var(--i, 0) * 55ms);
+    }
+    @keyframes optionIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .tl-item.done::before { animation: dotPop .5s cubic-bezier(.34, 1.56, .64, 1); }
+    @keyframes dotPop {
+      0% { transform: scale(.55); }
+      65% { transform: scale(1.22); }
+      100% { transform: scale(1); }
+    }
+
+    .pg-line, .pg-err, .pg-res { animation: lineIn .3s ease backwards; }
+    @keyframes lineIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    details .answer { animation: answerIn .3s ease backwards; }
+    @keyframes answerIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .skip-link {
+      position: fixed;
+      top: 10px; left: 10px;
+      z-index: 70;
+      padding: .7rem 1.05rem;
+      border-radius: 10px;
+      background: var(--accent);
+      color: #04111f;
+      font-weight: 750;
+      text-decoration: none;
+      transform: translateY(-160%);
+      transition: transform .25s cubic-bezier(.22, 1, .36, 1);
+    }
+    .skip-link:focus { transform: none; }
+
+    .to-top {
+      position: fixed;
+      right: clamp(1rem, 3vw, 2rem);
+      bottom: clamp(1rem, 3vw, 2rem);
+      z-index: 45;
+      width: 46px; height: 46px;
+      display: grid; place-items: center;
+      border-radius: 50%;
+      border: 1px solid var(--border-strong);
+      background: rgba(15, 23, 42, .85);
+      color: var(--text);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 14px 34px rgba(0, 0, 0, .45);
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(14px) scale(.92);
+      transition: opacity .3s ease, transform .3s cubic-bezier(.22, 1, .36, 1), visibility .3s, border-color .2s ease;
+    }
+    .to-top svg { width: 18px; height: 18px; }
+    .to-top.show { opacity: 1; visibility: visible; transform: none; }
+    .to-top:hover { border-color: rgba(56, 189, 248, .55); transform: translateY(-3px); }
+    .to-top:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+    @media (max-width: 1040px) {
+      .nav-links a:not(.nav-cta)::after { bottom: 4px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .gradient-text, .creator-name, .big-stat .num, .pulse-dot { animation: none; }
+      .btn-primary::after { display: none; }
+      pre.code.active, .quiz-option, .pg-line, .pg-err, .pg-res,
+      .tl-item.done::before, details .answer { animation: none; }
+      .scroll-progress span, .to-top, .icon, .mini-card .emoji, nav,
+      .big-stat, .card, .nav-links, .skip-link,
+      .nav-links a:not(.nav-cta)::after { transition: none; }
+      .btn:hover, .card:hover, .big-stat:hover, .card:hover .icon,
+      .mini-card:hover, .mini-card:hover .emoji, .resource:hover,
+      .path-step:hover, .to-top:hover, .creator-frame:hover,
+      .creator-frame:hover .creator-photo img { transform: none; }
+    }
   </style>
 </head>
 <body class="loading">
+  <div class="scroll-progress" aria-hidden="true"><span id="scrollBar"></span></div>
+  <a class="skip-link" href="#main">Skip to content</a>
   <div class="preloader" id="preloader" role="status" aria-live="polite" aria-label="Loading website">
     <div class="preloader-bg" aria-hidden="true"></div>
     <div class="preloader-grid" aria-hidden="true"></div>
@@ -1551,6 +1737,7 @@
     <style>
       .preloader { display: none !important; }
       body.loading { overflow: auto !important; }
+      .reveal { opacity: 1 !important; transform: none !important; }
     </style>
   </noscript>
 
@@ -1638,7 +1825,7 @@
     </div>
   </header>
 
-  <main class="container">
+  <main class="container" id="main" tabindex="-1">
     <section id="why">
       <div class="section-head reveal">
         <span class="kicker">The beginner advantage</span>
@@ -1730,7 +1917,7 @@
       <div class="code-window reveal">
         <div class="code-top">
           <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-          <span style="margin-left:.35rem;">examples.py</span>
+          <span class="filename">examples.py</span>
           <div class="tabs" role="tablist" aria-label="Python examples">
             <button class="tab active" data-tab="hello" role="tab" aria-selected="true">Hello World</button>
             <button class="tab" data-tab="loop" role="tab" aria-selected="false">Loops</button>
@@ -1841,7 +2028,7 @@ tasks = [
       <div class="demo-grid">
         <div class="panel reveal">
           <h3>Your first program</h3>
-          <p style="margin-bottom:0.9rem;">Enter a name and run the simulated script. No installation needed—it runs in your browser.</p>
+          <p class="demo-hint">Enter a name and run the simulated script. No installation needed—it runs in your browser.</p>
           <div class="demo-form">
             <label for="nameInput">Your name</label>
             <input id="nameInput" type="text" placeholder="e.g. Irash" autocomplete="off" />
@@ -1852,7 +2039,7 @@ tasks = [
         <div class="terminal reveal" aria-live="polite">
           <div class="term-top">
             <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-            <span style="margin-left:.35rem;">python3 demo.py</span>
+            <span class="filename">python3 demo.py</span>
           </div>
           <div class="term-body" id="termOut"><span class="prompt">$</span> Waiting for you to press Run…</div>
         </div>
@@ -1868,7 +2055,7 @@ tasks = [
       <div class="pg-window reveal">
         <div class="pg-top">
           <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-          <span class="pg-filename">main.py</span>
+          <span class="filename">main.py</span>
           <span class="pg-status" id="pgStatus"><span class="pulse-dot"></span> Loading Python runtime…</span>
           <div class="pg-actions">
             <button class="btn btn-primary" id="pgRun" type="button">▶ Run</button>
@@ -1934,31 +2121,31 @@ for n in range(1, 6):
         <div class="timeline">
           <div class="tl-item">
             <span class="tl-week">Weeks 1–2</span>
-            <h4>Fundamentals</h4>
+            <h3>Fundamentals</h3>
             <p>Install Python, run your first script, and learn variables, data types, input/output, and basic operators.</p>
             <label class="tl-check"><input type="checkbox" aria-label="Mark Fundamentals as complete" /> Completed</label>
           </div>
           <div class="tl-item">
             <span class="tl-week">Weeks 3–4</span>
-            <h4>Control flow and collections</h4>
+            <h3>Control flow and collections</h3>
             <p>Practice <code>if</code> statements, loops, lists, dictionaries, and simple functions by solving small exercises.</p>
             <label class="tl-check"><input type="checkbox" aria-label="Mark Control flow and collections as complete" /> Completed</label>
           </div>
           <div class="tl-item">
             <span class="tl-week">Weeks 5–6</span>
-            <h4>Mini projects</h4>
+            <h3>Mini projects</h3>
             <p>Build a calculator, a quiz game, a to-do list, or a file-renaming script to connect concepts to real outcomes.</p>
             <label class="tl-check"><input type="checkbox" aria-label="Mark Mini projects as complete" /> Completed</label>
           </div>
           <div class="tl-item">
             <span class="tl-week">Weeks 7–8</span>
-            <h4>Choose a direction</h4>
+            <h3>Choose a direction</h3>
             <p>Explore web development (Flask/FastAPI), data analysis (pandas), automation, or game development with pygame.</p>
             <label class="tl-check"><input type="checkbox" aria-label="Mark Choose a direction as complete" /> Completed</label>
           </div>
           <div class="tl-item">
             <span class="tl-week">Ongoing</span>
-            <h4>Build, read, and share</h4>
+            <h3>Build, read, and share</h3>
             <p>Read other people’s code, contribute to small projects, and keep shipping. Explaining your work is one of the fastest ways to learn.</p>
             <label class="tl-check"><input type="checkbox" aria-label="Mark Build, read, and share as complete" /> Completed</label>
           </div>
@@ -2201,6 +2388,7 @@ for n in range(1, 6):
                 width="1400"
                 height="1867"
                 loading="lazy"
+                decoding="async"
               />
               <div class="creator-grade" aria-hidden="true"></div>
               <div class="creator-halftone" aria-hidden="true"></div>
@@ -2298,6 +2486,12 @@ for n in range(1, 6):
     </div>
   </footer>
 
+  <button class="to-top" id="toTop" type="button" aria-label="Back to top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M12 19V5M5 12l7-7 7 7" />
+    </svg>
+  </button>
+
   <script>
     // Loading screen
     const preloader = document.getElementById('preloader');
@@ -2346,6 +2540,8 @@ for n in range(1, 6):
         setTimeout(() => {
           preloader.classList.add('hidden');
           document.body.classList.remove('loading');
+          document.body.classList.add('loaded');
+          window.dispatchEvent(new Event('plh-ready'));
           setTimeout(() => { preloader.style.display = 'none'; }, 950);
         }, 480);
       };
@@ -2374,9 +2570,21 @@ for n in range(1, 6):
       });
     });
 
-    // Scroll reveal
+    // Scroll reveal (staggered by group, starts after the intro)
     const revealEls = document.querySelectorAll('.reveal');
-    if ('IntersectionObserver' in window) {
+    revealEls.forEach((el) => {
+      const siblings = el.parentElement ? [...el.parentElement.children].filter(c => c.classList.contains('reveal')) : [];
+      const index = siblings.indexOf(el);
+      if (index > 0) el.style.setProperty('--d', Math.min(index, 6) * 55 + 'ms');
+    });
+    let revealsStarted = false;
+    const startReveal = () => {
+      if (revealsStarted) return;
+      revealsStarted = true;
+      if (!('IntersectionObserver' in window)) {
+        revealEls.forEach(el => el.classList.add('visible'));
+        return;
+      }
       const io = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
@@ -2385,9 +2593,75 @@ for n in range(1, 6):
           }
         });
       }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-      revealEls.forEach(el => io.observe(el));
+      revealEls.forEach(el => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight && rect.bottom > 0) {
+          el.classList.add('visible');
+        } else {
+          io.observe(el);
+        }
+      });
+    };
+    if (document.body.classList.contains('loading')) {
+      window.addEventListener('plh-ready', startReveal, { once: true });
+      setTimeout(startReveal, 8000);
     } else {
-      revealEls.forEach(el => el.classList.add('visible'));
+      startReveal();
+    }
+
+    // Scroll progress, sticky nav state, and back-to-top
+    const scrollBar = document.getElementById('scrollBar');
+    const siteNav = document.querySelector('nav');
+    const toTop = document.getElementById('toTop');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let scrollQueued = false;
+
+    const updateScrollUI = () => {
+      scrollQueued = false;
+      const y = window.scrollY || 0;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      if (scrollBar) scrollBar.style.transform = 'scaleX(' + (max > 0 ? Math.min(y / max, 1) : 0) + ')';
+      siteNav?.classList.toggle('scrolled', y > 8);
+      toTop?.classList.toggle('show', y > 700);
+      if (y < 150) navLinks?.querySelectorAll('a.active').forEach(link => link.classList.remove('active'));
+    };
+    const queueScrollUI = () => {
+      if (scrollQueued) return;
+      scrollQueued = true;
+      requestAnimationFrame(updateScrollUI);
+    };
+    window.addEventListener('scroll', queueScrollUI, { passive: true });
+    window.addEventListener('resize', queueScrollUI, { passive: true });
+    updateScrollUI();
+
+    toTop?.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: reduceMotion.matches ? 'auto' : 'smooth' });
+    });
+
+    // Nav scroll spy
+    if (navLinks && 'IntersectionObserver' in window) {
+      const spyLinks = [...navLinks.querySelectorAll('a[href^="#"]')];
+      const spyPairs = spyLinks
+        .map(link => ({ link, section: document.getElementById(link.getAttribute('href').slice(1)) }))
+        .filter(pair => pair.section);
+      if (spyPairs.length) {
+        const spy = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            const pair = spyPairs.find(p => p.section === entry.target);
+            if (!pair) return;
+            spyLinks.forEach(link => link.classList.remove('active'));
+            pair.link.classList.add('active');
+          });
+        }, { rootMargin: '-45% 0px -50% 0px' });
+        spyPairs.forEach(pair => {
+          spy.observe(pair.section);
+          pair.link.addEventListener('click', () => {
+            spyLinks.forEach(link => link.classList.remove('active'));
+            pair.link.classList.add('active');
+          });
+        });
+      }
     }
 
     // Animated counters
@@ -2422,6 +2696,7 @@ for n in range(1, 6):
 
     // Code tabs
     const tabs = document.querySelectorAll('.tab');
+    const codePanels = document.querySelectorAll('pre.code');
     tabs.forEach(tab => {
       tab.addEventListener('click', () => {
         tabs.forEach(t => {
@@ -2430,18 +2705,38 @@ for n in range(1, 6):
         });
         tab.classList.add('active');
         tab.setAttribute('aria-selected', 'true');
-        document.querySelectorAll('pre.code').forEach(p => p.classList.remove('active'));
+        codePanels.forEach(p => p.classList.remove('active'));
         document.getElementById('tab-' + tab.dataset.tab)?.classList.add('active');
       });
     });
 
-    // Resource card cursor spotlight
+    // Resource card cursor spotlight (one layout read per frame, not per event)
     document.querySelectorAll('.resource').forEach(card => {
-      card.addEventListener('pointermove', (e) => {
-        const r = card.getBoundingClientRect();
-        card.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100).toFixed(1) + '%');
-        card.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100).toFixed(1) + '%');
+      let rect = null;
+      let lastScrollY = -1;
+      let frame = 0;
+      let px = 0;
+      let py = 0;
+      const paint = () => {
+        frame = 0;
+        if (!rect) return;
+        card.style.setProperty('--mx', ((px - rect.left) / rect.width * 100).toFixed(1) + '%');
+        card.style.setProperty('--my', ((py - rect.top) / rect.height * 100).toFixed(1) + '%');
+      };
+      card.addEventListener('pointerenter', () => {
+        rect = card.getBoundingClientRect();
+        lastScrollY = window.scrollY;
       });
+      card.addEventListener('pointermove', (e) => {
+        if (!rect || lastScrollY !== window.scrollY) {
+          rect = card.getBoundingClientRect();
+          lastScrollY = window.scrollY;
+        }
+        px = e.clientX;
+        py = e.clientY;
+        if (!frame) frame = requestAnimationFrame(paint);
+      }, { passive: true });
+      card.addEventListener('pointerleave', () => { rect = null; });
     });
 
     // Interactive demo
@@ -2589,13 +2884,14 @@ for n in range(1, 6):
         pgRun();
       }
     });
-    if ('IntersectionObserver' in window && document.getElementById('playground')) {
+    const playgroundSection = document.getElementById('playground');
+    if ('IntersectionObserver' in window && playgroundSection) {
       const po = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) { ensurePyodide(); po.disconnect(); }
         });
       }, { rootMargin: '700px 0px' });
-      po.observe(document.getElementById('playground'));
+      po.observe(playgroundSection);
     }
 
     // Quiz
@@ -2677,6 +2973,7 @@ for n in range(1, 6):
         const b = document.createElement('button');
         b.type = 'button';
         b.className = 'quiz-option';
+        b.style.setProperty('--i', i);
         b.textContent = opt;
         b.addEventListener('click', () => chooseAnswer(i));
         quizOpts.appendChild(b);
