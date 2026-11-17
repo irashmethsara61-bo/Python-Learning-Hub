@@ -86,6 +86,7 @@ The GitHub Pages deployment is fully static. Without the Rust server, progress s
 ```text
 .
 ├── Cargo.toml            # Rust package: axum, tokio, serde, rusqlite
+├── Cargo.lock            # Pinned dependency versions for reproducible builds
 ├── .gitignore            # Excludes target/ and local database files
 ├── src/
 │   ├── main.rs           # Axum server, embedded assets, static routes
@@ -108,8 +109,8 @@ The GitHub Pages deployment is fully static. Without the Rust server, progress s
 
 Requirements:
 
-- [Rust with Cargo](https://www.rust-lang.org/tools/install)
-- A C compiler for bundled SQLite. On Windows, install Visual Studio Build Tools with the **Desktop development with C++** workload.
+- [Rust with Cargo](https://www.rust-lang.org/tools/install) — tested with Rust 1.100.0.
+- A C compiler for bundled SQLite. On Windows, use either Visual Studio Build Tools with the **Desktop development with C++** workload, or a MinGW-w64 toolchain such as [WinLibs](https://winlibs.com/) with `gcc` on `PATH`.
 
 ```bash
 cargo run
@@ -140,6 +141,18 @@ python -m http.server 8090
 ```
 
 Then open [http://127.0.0.1:8090](http://127.0.0.1:8090). The leaderboard card stays hidden, roadmap progress stays in `localStorage`, and the console remains clean.
+
+### Tests and checks
+
+With the Rust toolchain and a C compiler installed:
+
+```bash
+cargo test                          # unit tests for ranking, progress, validation
+cargo clippy --all-targets -- -D warnings
+cargo fmt --check
+```
+
+The integration script used during development exercised the running server end to end: HTML and `HEAD` detection, health, quiz submissions, personal bests, shared ranks, validation failures, roadmap round-trips, image ranges, and 404 fallback.
 
 ---
 
@@ -293,14 +306,16 @@ No analytics are collected. In static mode, no quiz scores or personal data are 
 | Check | Result |
 | --- | --- |
 | Static audit (structure, anchors, CSS classes, Rust includes) | Pass |
-| Browser console errors (static and SQLite modes) | 0 |
-| Lighthouse Accessibility / Best Practices / SEO | **100 / 100 / 100** |
+| Rust build, unit tests, and lints | `cargo build`, 4 `cargo test` tests, `cargo clippy -D warnings`, and `cargo fmt --check` pass on Rust 1.100.0 |
+| Live API integration | 50 checks passed against the running Axum server with bundled SQLite |
+| Browser console errors (static and real SQLite server) | 0 |
+| Lighthouse Accessibility / Best Practices / SEO | **100 / 100 / 100** on static and SQLite modes |
 | Python runtime | CPython **3.13.2** executes and returns output |
 | Layout overflow | None at tested desktop and mobile widths |
 | External resource links | Verified reachable (November 2026) |
-| SQLite schema and API contract | Validated with SQLite and a mock HTTP harness |
-| Leaderboard flow | Submit, rank, deduplicate, and reload verified |
-| Roadmap sync | SQLite PUT, reload, and reset verified |
+| SQLite schema and API contract | Validated with SQLite, a mock HTTP harness, and the real Rust server |
+| Leaderboard flow | Submit, personal best, deduplication, shared ranks, and reload verified against the real server |
+| Roadmap sync | SQLite PUT, reload, and reset verified against the real server |
 
 Runtime checks covered the loader and skip control, all seven code tabs, the demo terminal, the Pyodide playground, quiz scoring and restart, leaderboard submission, roadmap persistence and SQLite sync, the mobile menu, scroll progress, scroll spy, back-to-top, and the skip link.
 
@@ -340,7 +355,7 @@ The binary binds to loopback by default, assets are embedded at compile time, an
 - There are no accounts, authentication, or analytics.
 - The leaderboard is public to anyone who can reach the API; do not expose it without protection.
 - The Rust server is optional; GitHub Pages serves the static site.
-- Bundled SQLite needs a C compiler when building the Rust binary.
+- Bundled SQLite needs a C compiler when building the Rust binary (MSVC Build Tools, or a MinGW-w64 toolchain such as WinLibs).
 
 ---
 

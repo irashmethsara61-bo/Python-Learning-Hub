@@ -1,3 +1,7 @@
+// Axum handlers return responses directly. Boxing them only to satisfy
+// `result_large_err` would add indirection without a real benefit here.
+#![allow(clippy::result_large_err)]
+
 use crate::db::Database;
 use axum::{
     extract::{Path, Query, State},
@@ -150,10 +154,7 @@ pub async fn put_progress(
         return response;
     }
     if payload.completed.len() > MAX_PROGRESS_STEPS {
-        return error_response(
-            StatusCode::UNPROCESSABLE_ENTITY,
-            "too many progress steps",
-        );
+        return error_response(StatusCode::UNPROCESSABLE_ENTITY, "too many progress steps");
     }
 
     let db = state.db.clone();
@@ -198,10 +199,7 @@ fn validate_client_id(client_id: &str) -> Result<(), Response> {
     if valid_length && valid_characters {
         Ok(())
     } else {
-        Err(error_response(
-            StatusCode::BAD_REQUEST,
-            "invalid client id",
-        ))
+        Err(error_response(StatusCode::BAD_REQUEST, "invalid client id"))
     }
 }
 
@@ -241,4 +239,20 @@ fn json_response<T: Serialize>(status: StatusCode, body: T) -> Response {
 
 fn error_response(status: StatusCode, message: &str) -> Response {
     json_response(status, json!({ "error": message }))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn client_ids_are_strictly_validated() {
+        assert!(validate_client_id("client-12345678").is_ok());
+        assert!(validate_client_id("A1_b-9xyz").is_ok());
+        assert!(validate_client_id("short").is_err());
+        assert!(validate_client_id("bad id with spaces").is_err());
+        assert!(validate_client_id(&"x".repeat(65)).is_err());
+        assert!(validate_client_id("client/12345678").is_err());
+        assert!(validate_client_id("client.12345678").is_err());
+    }
 }

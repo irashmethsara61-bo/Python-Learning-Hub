@@ -3212,22 +3212,23 @@ for n in range(1, 6):
       lbForm.addEventListener('submit', async (event) => {
         event.preventDefault();
         if (!lbAvailable || !quizComplete || lbSubmit.disabled) return;
-        const name = lbName.value.trim().replace(/\s+/g, ' ');
-        if (name.length < 2) {
+        const nameChars = Array.from(lbName.value.trim().replace(/\s+/g, ' '));
+        if (nameChars.length < 2) {
           lbMsg.textContent = 'Enter a name with at least 2 characters.';
           lbMsg.className = 'lb-msg badf';
           lbName.focus();
           return;
         }
+        const name = nameChars.slice(0, 20).join('');
         lbSubmit.disabled = true;
         lbMsg.textContent = 'Saving…';
         lbMsg.className = 'lb-msg';
         try {
           const data = await apiFetch('api/quiz-attempts', {
             method: 'POST',
-            body: JSON.stringify({ name: name.slice(0, 20), score: quizScore, total: QUIZ.length })
+            body: JSON.stringify({ name, score: quizScore, total: QUIZ.length })
           });
-          try { localStorage.setItem(LB_NAME_KEY, name.slice(0, 20)); } catch {}
+          try { localStorage.setItem(LB_NAME_KEY, name); } catch {}
           lbMsg.textContent = 'Saved — personal best ' + data.best + ' / ' + data.attempt.total + ', rank #' + data.rank + '.';
           lbMsg.className = 'lb-msg good';
           loadLeaderboard();

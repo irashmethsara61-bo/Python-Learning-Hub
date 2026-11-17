@@ -231,12 +231,80 @@ impl Database {
         })
     }
 
-    fn with_conn<T>(&self, operation: impl FnOnce(&Connection) -> rusqlite::Result<T>) -> rusqlite::Result<T> {
+    fn with_conn<T>(
+        &self,
+        operation: impl FnOnce(&Connection) -> rusqlite::Result<T>,
+    ) -> rusqlite::Result<T> {
         // Recover the guard if a previous caller panicked while holding it.
         let conn = self
             .conn
             .lock()
             .unwrap_or_else(|poisoned| poisoned.into_inner());
         operation(&conn)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn test_db() -> Database {
+        Database::open(Path::new(":memory:")).expect("in-memory database")
+    }
+
+    #[test]
+    fn leaderboard_keeps_best_attempt_and_shares_ranks() {
+        let db = test_db();
+        db.insert_attempt("Alice", 6, 8).unwrap();
+        db.insert_attempt("Bob", 8, 8).unwrap();
+        db.insert_attempt("Alice", 7, 8).unwrap();
+        db.insert_attempt("Cara", 7, 8).unwrap();
+
+        let entries = db.leaderboard(10).unwrap();
+        let mut summary: Vec<(&str, i64, i64)> = entries
+            .iter()
+            .map(|entry| (entry.name.as_str(), entry.score, entry.rank))
+            .collect();
+        summary.sort_unstable();
+        assert_eq!(
+            summary,
+            vec![("Alice", 7, 2), ("Bob", 8, 1), ("Cara", 7, 2)]
+        );
+
+        assert_eq!(db.player_standing("Alice", 8).unwrap(), (2, 7));
+        assert_eq!(db.player_standing("Bob", 8).unwrap(), (1, 8));
+
+        let limited = db.leaderboard(1).unwrap();
+        assert_eq!(limited.len(), 1);
+        assert_eq!(limited[0].name, "Bob");
+    }
+
+    #[test]
+    fn progress_roundtrip_and_delete() {
+        let db = test_db();
+        let client_id = "integration-client-0001";
+
+        let missing = db.get_progress(client_id).unwrap();
+        assert!(missing.completed.is_empty());
+        assert!(missing.updated_at.is_none());
+
+        let values = [true, false, true, false, false];
+        let saved = db.put_progress(client_id, &values).unwrap();
+        assert_eq!(saved.completed, values);
+        assert!(saved.updated_at.is_some());
+
+        let loaded = db.get_progress(client_id).unwrap();
+        assert_eq!(loaded.completed, values);
+        assert!(loaded.updated_at.is_some());
+
+        db.delete_progress(client_id).unwrap();
+        let gone = db.get_progress(client_id).unwrap();
+        assert!(gone.completed.is_empty());
+        assert!(gone.updated_at.is_none());
+    }
+
+    #[test]
+    fn health_check_succeeds() {
+        test_db().health().unwrap();
     }
 }
