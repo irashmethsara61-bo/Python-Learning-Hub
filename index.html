@@ -45,6 +45,7 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    [hidden] { display: none !important; }
     html { scroll-behavior: smooth; scroll-padding-top: 90px; }
     body {
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -1119,6 +1120,67 @@
     .quiz-score { text-align: center; padding: .8rem 0 .3rem; }
     .quiz-score b { font-size: 2.6rem; letter-spacing: -.03em; }
     .quiz-score p { color: var(--muted); margin-top: .45rem; }
+
+    /* ---------- SQLite leaderboard ---------- */
+    .lb-card {
+      max-width: 760px;
+      margin-top: 1rem;
+      padding: 1.3rem 1.4rem 1.4rem;
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .lb-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-bottom: .9rem; }
+    .lb-head h3 { font-size: 1.05rem; letter-spacing: -.01em; }
+    .lb-badge {
+      font-size: .7rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
+      color: #6ee7b7; border: 1px solid rgba(52, 211, 153, .35);
+      border-radius: 999px; padding: .18rem .55rem;
+    }
+    .lb-form {
+      display: grid; gap: .5rem;
+      padding: .9rem;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .025);
+      margin-bottom: 1rem;
+    }
+    .lb-form label { font-size: .72rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+    .lb-row { display: flex; gap: .55rem; flex-wrap: wrap; }
+    .lb-row input {
+      flex: 1; min-width: 160px;
+      font: inherit; color: var(--text);
+      background: rgba(2, 6, 23, .55);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: .55rem .75rem;
+      transition: border-color .2s ease;
+    }
+    .lb-row input:hover { border-color: var(--border-strong); }
+    .lb-row input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-color: transparent; }
+    .lb-msg { min-height: 1.2rem; font-size: .8rem; color: var(--muted); }
+    .lb-msg.good { color: #6ee7b7; }
+    .lb-msg.badf { color: #fda4af; }
+    .lb-list { list-style: none; display: grid; gap: .4rem; }
+    .lb-item {
+      display: flex; align-items: center; gap: .7rem;
+      padding: .55rem .7rem;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      background: rgba(255, 255, 255, .025);
+    }
+    .lb-item.top { border-color: rgba(250, 204, 21, .35); background: rgba(250, 204, 21, .06); }
+    .lb-rank { min-width: 1.8rem; font-weight: 800; color: var(--muted); font-variant-numeric: tabular-nums; }
+    .lb-item.top .lb-rank { color: var(--warning); }
+    .lb-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .lb-score { font-weight: 800; font-variant-numeric: tabular-nums; }
+    .lb-empty { color: var(--muted); font-size: .85rem; }
+    @media (max-width: 560px) {
+      .lb-row { flex-direction: column; }
+      .lb-row .btn { width: 100%; justify-content: center; }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       .quiz-option, .quiz-dots span { transition: none; }
     }
@@ -1146,6 +1208,13 @@
       transition: color .2s ease, border-color .2s ease;
     }
     .rp-reset:hover { color: var(--text); border-color: rgba(56, 189, 248, .4); }
+    .rp-sync {
+      font-size: .72rem; color: var(--muted);
+      border: 1px solid var(--border); border-radius: 999px;
+      padding: .35rem .8rem;
+      transition: color .2s ease, border-color .2s ease;
+    }
+    .rp-sync.on { color: #6ee7b7; border-color: rgba(52, 211, 153, .35); }
     .tl-check {
       display: inline-flex; align-items: center; gap: .45rem;
       margin-top: .5rem;
@@ -2105,6 +2174,22 @@ for n in range(1, 6):
           <button class="btn btn-primary" id="quizNext" type="button" disabled>Next →</button>
         </div>
       </div>
+      <div class="lb-card reveal" id="lbCard" hidden>
+        <div class="lb-head">
+          <h3>Top scores</h3>
+          <span class="lb-badge">SQLite</span>
+        </div>
+        <form class="lb-form" id="lbForm" hidden>
+          <label for="lbName">Save this result to the local leaderboard</label>
+          <div class="lb-row">
+            <input id="lbName" name="name" type="text" maxlength="20" minlength="2" autocomplete="nickname" placeholder="Your name" required />
+            <button class="btn btn-primary" type="submit">Submit score</button>
+          </div>
+          <p class="lb-msg" id="lbMsg" role="status"></p>
+        </form>
+        <p class="lb-empty" id="lbEmpty">No scores yet. Finish the quiz to be first.</p>
+        <ol class="lb-list" id="lbList" aria-label="Top quiz scores"></ol>
+      </div>
     </section>
 
     <section id="roadmap">
@@ -2117,6 +2202,7 @@ for n in range(1, 6):
         <div class="roadmap-progress">
           <div class="rp-text"><b id="rpCount">0 of 5 milestones</b><span id="rpPct">0% complete</span></div>
           <div class="rp-bar" aria-hidden="true"><span id="rpBar"></span></div>
+          <span class="rp-sync" id="rpSync" aria-live="polite">Browser storage</span>
           <button class="rp-reset" id="rpReset" type="button">Reset progress</button>
         </div>
         <div class="timeline">
@@ -2895,6 +2981,80 @@ for n in range(1, 6):
       po.observe(playgroundSection);
     }
 
+    // Optional SQLite API, available when the site is served by the Rust server.
+    const CLIENT_KEY = 'plh-client-v1';
+
+    async function hasBackend() {
+      try {
+        const response = await fetch('./', { method: 'HEAD', cache: 'no-store' });
+        return response.ok && response.headers.get('x-plh-backend') === 'sqlite';
+      } catch {
+        return false;
+      }
+    }
+
+    async function apiFetch(path, options = {}) {
+      const headers = { Accept: 'application/json', ...(options.headers || {}) };
+      if (options.body) headers['Content-Type'] = 'application/json';
+      const response = await fetch(path, { ...options, headers });
+      if (!response.ok) {
+        let message = 'Request failed';
+        try {
+          const body = await response.json();
+          if (body && body.error) message = body.error;
+        } catch {}
+        throw new Error(message);
+      }
+      if (response.status === 204) return null;
+      return response.json();
+    }
+
+    function getClientId() {
+      try {
+        let id = localStorage.getItem(CLIENT_KEY);
+        if (!id) {
+          id = (window.crypto && typeof crypto.randomUUID === 'function')
+            ? crypto.randomUUID()
+            : 'client-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+          localStorage.setItem(CLIENT_KEY, id);
+        }
+        return id;
+      } catch {
+        return 'client-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+      }
+    }
+
+    function renderLeaderboard(entries) {
+      if (!lbList || !lbEmpty) return;
+      lbList.innerHTML = '';
+      entries.forEach((entry) => {
+        const item = document.createElement('li');
+        item.className = 'lb-item' + (entry.rank === 1 ? ' top' : '');
+        item.setAttribute('aria-label', 'Rank ' + entry.rank + ', ' + entry.name + ', ' + entry.score + ' out of ' + entry.total);
+        const rank = document.createElement('span');
+        rank.className = 'lb-rank';
+        rank.textContent = '#' + entry.rank;
+        const name = document.createElement('span');
+        name.className = 'lb-name';
+        name.textContent = entry.name;
+        const score = document.createElement('span');
+        score.className = 'lb-score';
+        score.textContent = entry.score + ' / ' + entry.total;
+        item.append(rank, name, score);
+        lbList.appendChild(item);
+      });
+      lbEmpty.hidden = entries.length > 0;
+      lbList.hidden = entries.length === 0;
+    }
+
+    async function loadLeaderboard() {
+      if (!lbAvailable) return;
+      try {
+        const data = await apiFetch('api/leaderboard?limit=10');
+        renderLeaderboard(Array.isArray(data.entries) ? data.entries : []);
+      } catch {}
+    }
+
     // Quiz
     const QUIZ = [
       { q: 'Which keyword defines a function in Python?', options: ['func', 'def', 'function', 'lambda'], answer: 1, why: 'Functions are defined with def. lambda creates small anonymous functions.' },
@@ -2917,6 +3077,26 @@ for n in range(1, 6):
     let quizIndex = 0;
     let quizScore = 0;
     let quizDone = [];
+    const lbCard = document.getElementById('lbCard');
+    const lbForm = document.getElementById('lbForm');
+    const lbName = document.getElementById('lbName');
+    const lbMsg = document.getElementById('lbMsg');
+    const lbList = document.getElementById('lbList');
+    const lbEmpty = document.getElementById('lbEmpty');
+    const lbSubmit = lbForm ? lbForm.querySelector('button[type="submit"]') : null;
+    const LB_NAME_KEY = 'plh-name-v1';
+    let lbAvailable = false;
+    let quizComplete = false;
+
+    const showScoreForm = () => {
+      if (!lbAvailable || !lbCard || !lbForm || !lbName || !lbMsg) return;
+      lbCard.hidden = false;
+      lbForm.hidden = false;
+      lbMsg.textContent = '';
+      lbMsg.className = 'lb-msg';
+      try { lbName.value = localStorage.getItem(LB_NAME_KEY) || ''; } catch { lbName.value = ''; }
+      if (lbSubmit) lbSubmit.disabled = false;
+    };
 
     const buildDots = () => {
       quizDots.innerHTML = '';
@@ -2999,6 +3179,8 @@ for n in range(1, 6):
       scoreView.id = 'quizFeedbackView';
       quizNext.textContent = 'Restart quiz';
       quizNext.disabled = false;
+      quizComplete = true;
+      showScoreForm();
       updateDots();
       updateBar();
       quizNext.onclick = () => {
@@ -3006,6 +3188,10 @@ for n in range(1, 6):
         quizIndex = 0;
         quizScore = 0;
         quizDone = [];
+        quizComplete = false;
+        if (lbForm) lbForm.hidden = true;
+        if (lbMsg) { lbMsg.textContent = ''; lbMsg.className = 'lb-msg'; }
+        if (lbSubmit) lbSubmit.disabled = false;
         scoreView.replaceWith(quizFeedback);
         buildDots();
         renderQuestion();
@@ -3022,12 +3208,46 @@ for n in range(1, 6):
       });
     }
 
-    // Roadmap tracker (saved in the browser)
+    if (lbForm && lbName && lbMsg && lbSubmit) {
+      lbForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (!lbAvailable || !quizComplete || lbSubmit.disabled) return;
+        const name = lbName.value.trim().replace(/\s+/g, ' ');
+        if (name.length < 2) {
+          lbMsg.textContent = 'Enter a name with at least 2 characters.';
+          lbMsg.className = 'lb-msg badf';
+          lbName.focus();
+          return;
+        }
+        lbSubmit.disabled = true;
+        lbMsg.textContent = 'Saving…';
+        lbMsg.className = 'lb-msg';
+        try {
+          const data = await apiFetch('api/quiz-attempts', {
+            method: 'POST',
+            body: JSON.stringify({ name: name.slice(0, 20), score: quizScore, total: QUIZ.length })
+          });
+          try { localStorage.setItem(LB_NAME_KEY, name.slice(0, 20)); } catch {}
+          lbMsg.textContent = 'Saved — personal best ' + data.best + ' / ' + data.attempt.total + ', rank #' + data.rank + '.';
+          lbMsg.className = 'lb-msg good';
+          loadLeaderboard();
+        } catch (error) {
+          lbMsg.textContent = error.message || 'Could not save the score.';
+          lbMsg.className = 'lb-msg badf';
+          lbSubmit.disabled = false;
+        }
+      });
+    }
+
+    // Roadmap tracker (saved in the browser and, when available, SQLite)
     const RP_KEY = 'plh-roadmap-v1';
     const rpChecks = [...document.querySelectorAll('.tl-check input')];
     const rpBar = document.getElementById('rpBar');
     const rpCount = document.getElementById('rpCount');
     const rpPct = document.getElementById('rpPct');
+    const rpSync = document.getElementById('rpSync');
+    let rpClientId = null;
+    let rpSaveSeq = 0;
 
     const loadRP = () => {
       try { return JSON.parse(localStorage.getItem(RP_KEY)) || []; }
@@ -3035,6 +3255,26 @@ for n in range(1, 6):
     };
     const saveRP = (values) => {
       try { localStorage.setItem(RP_KEY, JSON.stringify(values)); } catch {}
+    };
+    const setRpSync = (text, synced) => {
+      if (!rpSync) return;
+      rpSync.textContent = text;
+      rpSync.classList.toggle('on', Boolean(synced));
+    };
+    const pushRP = (values) => {
+      if (!rpClientId) return Promise.resolve(false);
+      const seq = ++rpSaveSeq;
+      setRpSync('Saving…', false);
+      return apiFetch('api/progress/' + encodeURIComponent(rpClientId), {
+        method: 'PUT',
+        body: JSON.stringify({ completed: values })
+      }).then(() => {
+        if (seq === rpSaveSeq) setRpSync('Synced with SQLite', true);
+        return true;
+      }).catch(() => {
+        if (seq === rpSaveSeq) setRpSync('Browser storage', false);
+        return false;
+      });
     };
     const updateRP = () => {
       const done = rpChecks.filter(c => c.checked).length;
@@ -3051,8 +3291,10 @@ for n in range(1, 6):
         c.closest('.tl-item')?.classList.toggle('done', c.checked);
         c.addEventListener('change', () => {
           c.closest('.tl-item')?.classList.toggle('done', c.checked);
-          saveRP(rpChecks.map(x => x.checked));
+          const values = rpChecks.map(x => x.checked);
+          saveRP(values);
           updateRP();
+          pushRP(values);
         });
       });
       updateRP();
@@ -3063,8 +3305,47 @@ for n in range(1, 6):
         });
         saveRP([]);
         updateRP();
+        pushRP(rpChecks.map(() => false));
       });
     }
+
+    // Detect the optional Rust backend. On GitHub Pages this fails quietly and
+    // every feature keeps working with localStorage only.
+    (async () => {
+      if (!(await hasBackend())) return;
+
+      lbAvailable = true;
+      if (lbCard) lbCard.hidden = false;
+      if (quizComplete) showScoreForm();
+      loadLeaderboard();
+
+      if (!rpChecks.length || !rpBar) return;
+      rpClientId = getClientId();
+      setRpSync('Syncing with SQLite…', false);
+      try {
+        const remote = await apiFetch('api/progress/' + encodeURIComponent(rpClientId));
+        if (remote && remote.updated_at) {
+          const values = Array.isArray(remote.completed) ? remote.completed.map(Boolean) : [];
+          rpChecks.forEach((check, index) => {
+            check.checked = Boolean(values[index]);
+            check.closest('.tl-item')?.classList.toggle('done', check.checked);
+          });
+          saveRP(rpChecks.map(check => check.checked));
+          updateRP();
+          setRpSync('Synced with SQLite', true);
+        } else {
+          const local = loadRP();
+          if (local.some(Boolean)) {
+            await pushRP(rpChecks.map(check => check.checked));
+          } else {
+            setRpSync('Synced with SQLite', true);
+          }
+        }
+      } catch {
+        rpClientId = null;
+        setRpSync('Browser storage', false);
+      }
+    })();
 
     // Footer year
     const yearEl = document.getElementById('year');

@@ -6,9 +6,11 @@
 [![Lighthouse](https://img.shields.io/badge/Lighthouse-100%2F100%2F100-2ea44f?style=flat-square)](#verification)
 [![Python](https://img.shields.io/badge/Python-3.13.2-3776AB?style=flat-square&logo=python&logoColor=white)](#the-playground)
 [![Rust](https://img.shields.io/badge/Rust-Axum%200.7-000000?style=flat-square&logo=rust&logoColor=white)](#rust-server)
+[![SQLite](https://img.shields.io/badge/SQLite-local%20server-003B57?style=flat-square&logo=sqlite&logoColor=white)](#sqlite-database)
 
 **Live site:** [https://irashmethsara61-bo.github.io/Python-Learning-Hub/](https://irashmethsara61-bo.github.io/Python-Learning-Hub/)
 **Repository:** [github.com/irashmethsara61-bo/Python-Learning-Hub](https://github.com/irashmethsara61-bo/Python-Learning-Hub)
+**Local API:** `cargo run` serves the site and a SQLite-backed API at `http://127.0.0.1:3000`.
 
 ---
 
@@ -20,10 +22,11 @@ Python-Learning-Hub is a self-contained learning experience designed to take som
 - **Seven annotated code examples**, an **eight-question quiz**, and a **persistent roadmap tracker**.
 - **Verified free resources**, project ideas, a language comparison, and a creator showcase.
 - **Motion and polish** that stay fast, accessible, and respectful of reduced-motion preferences.
+- **An optional SQLite backend** that powers a local quiz leaderboard and syncs roadmap progress.
 
-Everything the site needs to run in the browser — markup, design system, animations, and JavaScript — lives in a single `index.html`. A small **Rust (Axum)** server is included for local and self-hosted use and embeds the site into the binary at compile time.
+Everything the site needs to run in the browser — markup, design system, animations, and JavaScript — lives in a single `index.html`. A small **Rust (Axum)** server is included for local and self-hosted use, embeds the site into the binary at compile time, and adds a local database.
 
-No analytics, accounts, or backend calls. Playground code never leaves the browser.
+The GitHub Pages deployment is fully static. Without the Rust server, progress stays in `localStorage` and the leaderboard stays hidden. There are no analytics, accounts, or third-party backend calls.
 
 ---
 
@@ -37,7 +40,8 @@ No analytics, accounts, or backend calls. Playground code never leaves the brows
 | **Seven code tabs** | Hello World, Loops, Functions, Lists, FizzBuzz, Objects, and Files — each with comments that explain the concept. |
 | **Simulated demo terminal** | Type a name and watch a guided “first program” run line by line. |
 | **Knowledge quiz** | Eight questions with instant correct/incorrect feedback, explanations, progress dots, a score screen, and restart. |
-| **Roadmap tracker** | Five checkable milestones with a live percentage bar. Progress is saved in `localStorage` under `plh-roadmap-v1` and can be reset. |
+| **SQLite leaderboard** | When the Rust server is running, players can submit a name and score. Entries are validated, deduplicated per player, and ranked by best attempt. |
+| **Roadmap tracker** | Five checkable milestones with a live percentage bar. Progress is saved in `localStorage` and, when available, synced to SQLite. |
 | **Resource library** | A three-step fast-start path plus twelve vetted resources with badges for free, official, beginner, certificate, and interactive. |
 | **Supporting content** | Why Python works for beginners, a comparison with other first languages, eight project ideas, an FAQ, and a creator section. |
 
@@ -49,15 +53,18 @@ No analytics, accounts, or backend calls. Playground code never leaves the brows
 - Gradient shimmer on headlines, button shine, card lifts, icon scaling, and code-tab cross-fades.
 - Quiz-option stagger, roadmap completion pulse, terminal line fade-in, and animated FAQ answers.
 - Animated mobile navigation that collapses at **1040 px** to keep the header clean on laptops.
+- Leaderboard rows and database sync states use the same restrained motion language.
 
 ### Accessibility and performance
 
 - **Lighthouse: Accessibility 100 · Best Practices 100 · SEO 100** (zero failed audits).
 - Skip-to-content link, sequential heading order, visible focus states, and labelled controls.
+- The leaderboard form uses a real `<form>`, a visible label, and a polite status region.
 - Comprehensive `prefers-reduced-motion` support — major animations, hover movement, and shimmer are disabled for a static presentation.
 - Zero inline `style` attributes; design tokens and motion live in the stylesheet.
 - rAF-throttled scroll handling, passive listeners, cached DOM collections, and one layout read per pointer frame.
 - Transform/opacity-based animation, lazy Pyodide loading, lazy portrait loading, and a CDN preconnect.
+- Progressive enhancement: the frontend probes for the backend with a tiny `HEAD /` request, so the static site makes no failing API calls.
 
 ---
 
@@ -68,8 +75,9 @@ No analytics, accounts, or backend calls. Playground code never leaves the brows
 | Site | HTML5, CSS3, vanilla JavaScript (single file) |
 | In-browser Python | [Pyodide](https://pyodide.org/) v0.29.5 — CPython 3.13.2 on WebAssembly |
 | Local server | Rust 2021 edition, [Axum](https://github.com/tokio-rs/axum) 0.7, Tokio |
+| Database | SQLite via [rusqlite](https://github.com/rusqlite/rusqlite) 0.32 (bundled) |
 | Hosting | GitHub Pages (static) |
-| Persistence | Browser `localStorage` for roadmap progress only |
+| Persistence | Browser `localStorage` + optional SQLite on the Rust server |
 
 ---
 
@@ -77,14 +85,18 @@ No analytics, accounts, or backend calls. Playground code never leaves the brows
 
 ```text
 .
-├── Cargo.toml            # Rust package: axum 0.7 + tokio
+├── Cargo.toml            # Rust package: axum, tokio, serde, rusqlite
+├── .gitignore            # Excludes target/ and local database files
 ├── src/
-│   └── main.rs           # Axum server with compile-time embedded assets
+│   ├── main.rs           # Axum server, embedded assets, static routes
+│   ├── api.rs            # JSON API handlers and request validation
+│   └── db.rs             # SQLite schema, queries, and connection wrapper
 ├── index.html            # Entire site: HTML, CSS, JS, playground, quiz, tracker
 ├── assets/
 │   ├── creator.jpg       # Creator portrait, 1400 px wide
 │   ├── creator-sm.jpg    # Creator portrait, 700 px wide (srcset)
 │   └── og-card.png       # 1200 × 630 social share card
+├── python-learning-hub.db # Created on first Rust run (gitignored)
 └── README.md
 ```
 
@@ -92,9 +104,12 @@ No analytics, accounts, or backend calls. Playground code never leaves the brows
 
 ## Run locally
 
-### Option 1 — Rust server (recommended)
+### Option 1 — Rust server with SQLite (recommended)
 
-Requirements: [Rust with Cargo](https://www.rust-lang.org/tools/install).
+Requirements:
+
+- [Rust with Cargo](https://www.rust-lang.org/tools/install)
+- A C compiler for bundled SQLite. On Windows, install Visual Studio Build Tools with the **Desktop development with C++** workload.
 
 ```bash
 cargo run
@@ -102,7 +117,19 @@ cargo run
 
 Open [http://127.0.0.1:3000](http://127.0.0.1:3000). Stop with `Ctrl + C`.
 
-The server binds to `127.0.0.1:3000` and embeds the site at compile time. After editing `index.html` or replacing an image in `assets/`, stop the server and run `cargo run` again — a rebuild is required.
+On first start the server creates `python-learning-hub.db` in the working directory, applies the schema, and enables WAL mode. Override the location with `PLH_DB_PATH`:
+
+```bash
+# Bash / macOS / Linux
+PLH_DB_PATH=./data/python-learning-hub.db cargo run
+```
+
+```powershell
+# PowerShell
+$env:PLH_DB_PATH = "D:\data\python-learning-hub.db"; cargo run
+```
+
+The server binds to `127.0.0.1:3000` and embeds the site at compile time. After editing `index.html`, `src/`, or replacing an image in `assets/`, stop the server and run `cargo run` again — a rebuild is required.
 
 ### Option 2 — any static file server
 
@@ -112,7 +139,7 @@ Because the production site is fully static, no Rust toolchain is needed for con
 python -m http.server 8090
 ```
 
-Then open [http://127.0.0.1:8090](http://127.0.0.1:8090).
+Then open [http://127.0.0.1:8090](http://127.0.0.1:8090). The leaderboard card stays hidden, roadmap progress stays in `localStorage`, and the console remains clean.
 
 ---
 
@@ -128,18 +155,82 @@ const CREATOR_IMAGE_SM: &[u8] = include_bytes!("../assets/creator-sm.jpg");
 
 Routes:
 
-| Route | Response |
-| --- | --- |
-| `/` and `/index.html` | The site as `text/html` |
-| `/assets/creator.jpg` | Embedded 1400 px portrait |
-| `/assets/creator-sm.jpg` | Embedded 700 px portrait |
-| anything else | `404 Not Found` |
+| Method | Route | Response |
+| --- | --- | --- |
+| `GET` | `/`, `/index.html` | The site as `text/html`, with `X-PLH-Backend: sqlite` |
+| `GET` | `/assets/creator.jpg` | Embedded 1400 px portrait |
+| `GET` | `/assets/creator-sm.jpg` | Embedded 700 px portrait |
+| `GET` | `/api/health` | `{ "status": "ok", "database": "sqlite", "version": "..." }` |
+| `GET` | `/api/leaderboard?limit=10` | Top scores, one row per player |
+| `POST` | `/api/quiz-attempts` | Validate and store a quiz attempt |
+| `GET` | `/api/progress/:client_id` | Read roadmap progress for one browser |
+| `PUT` | `/api/progress/:client_id` | Insert or replace roadmap progress |
+| `DELETE` | `/api/progress/:client_id` | Delete roadmap progress |
+| `*` | anything else | `404 Not Found` |
 
 Embedded images are served with `Content-Type`, `Content-Length`, `Accept-Ranges`, and a one-year immutable `Cache-Control`. Single-range requests return `206 Partial Content` with `Content-Range`; unsatisfiable ranges return `416`.
 
 The social card (`assets/og-card.png`) is a GitHub Pages asset referenced by absolute URL in the Open Graph metadata. The Rust server intentionally embeds only the two portraits the page requests.
 
-For remote hosting, change the bind address in `src/main.rs` from loopback to `0.0.0.0` (or your platform’s required address) and place a reverse proxy in front of it.
+### SQLite database
+
+The database is a single local file, opened in WAL mode with a five-second busy timeout. Schema:
+
+```sql
+CREATE TABLE quiz_attempts (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    name       TEXT    NOT NULL,
+    score      INTEGER NOT NULL,
+    total      INTEGER NOT NULL,
+    created_at TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+);
+
+CREATE INDEX idx_quiz_attempts_rank
+    ON quiz_attempts (score DESC, created_at ASC);
+
+CREATE TABLE roadmap_progress (
+    client_id  TEXT PRIMARY KEY,
+    completed  TEXT NOT NULL,   -- JSON array of booleans
+    updated_at TEXT NOT NULL
+);
+```
+
+Validation happens in `src/api.rs` before SQLite is touched:
+
+- `total` must equal **8**, matching the quiz in `index.html`.
+- `score` must be between `0` and `total`.
+- Names are trimmed, must be **2–20 characters**, and cannot contain control characters.
+- `client_id` must be **8–64** characters using letters, numbers, `-`, or `_`.
+- Progress accepts at most **20** boolean steps.
+
+Every attempt is stored, but the leaderboard groups by player name and keeps each player’s best score. Ties share a rank. Browser code supplies a UUID stored under `plh-client-v1`; the database uses it to keep roadmap progress separate per browser.
+
+### API examples
+
+```bash
+curl http://127.0.0.1:3000/api/health
+curl "http://127.0.0.1:3000/api/leaderboard?limit=10"
+
+curl -X POST http://127.0.0.1:3000/api/quiz-attempts \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Ada","score":8,"total":8}'
+
+curl -X PUT http://127.0.0.1:3000/api/progress/00000000-0000-4000-8000-000000000000 \
+  -H "Content-Type: application/json" \
+  -d '{"completed":[true,false,false,false,false]}'
+```
+
+### Database maintenance
+
+- **Backup:** use SQLite’s online backup command (`sqlite3 python-learning-hub.db ".backup backup.db"`) or stop the server and copy the `.db` file.
+- **Reset:** stop the server, remove `python-learning-hub.db` (and any `-wal` / `-shm` files), then start it again.
+- **Upgrade schema:** `CREATE TABLE IF NOT EXISTS` does not migrate existing columns. Add an explicit migration before changing a table.
+- **Security:** there is no authentication. Names and scores are visible to anyone who can reach the API. Keep the server on loopback, or put authentication, rate limiting, and TLS in a reverse proxy before exposing it.
+- **Remote hosting:** change the bind address in `src/main.rs` from loopback to `0.0.0.0` (or your platform’s required address) and place a reverse proxy in front of it.
+
+### How the frontend detects the database
+
+The Rust server adds `X-PLH-Backend: sqlite` to the HTML response. The page sends one `HEAD` request to its own directory and enables the leaderboard and SQLite sync only when that header is present. On GitHub Pages the header is absent, so the static site does not call `/api/*` and logs no failed requests.
 
 ---
 
@@ -161,17 +252,26 @@ To upgrade Python, change the pinned Pyodide URL and re-test the playground.
 
 ---
 
-## Quiz and roadmap data
+## Quiz, roadmap, and database data
 
-The quiz is defined as a plain JavaScript array in `index.html`, with one correct index and a short explanation per question. The roadmap uses:
+The quiz is defined as a plain JavaScript array in `index.html`, with one correct index and a short explanation per question. The server’s `QUIZ_TOTAL` constant in `src/api.rs` must match the quiz length.
+
+The roadmap uses two browser keys:
 
 ```js
 const RP_KEY = 'plh-roadmap-v1';
+const CLIENT_KEY = 'plh-client-v1';
 ```
 
-Progress is stored as a boolean array. If you add, remove, or reorder milestones, change the storage key (for example, `plh-roadmap-v2`) so older saved arrays cannot be applied to the new structure.
+Progress is stored as a boolean array. If you add, remove, or reorder milestones:
 
-No quiz scores or personal data are sent to a server.
+1. Change `RP_KEY` (for example, to `plh-roadmap-v2`) so older saved arrays are ignored.
+2. Update `MAX_PROGRESS_STEPS` in `src/api.rs` if the new length exceeds 20.
+3. Clear the `roadmap_progress` table, or convert the stored JSON arrays before deploying.
+
+When SQLite is available, the server record wins on page load. If the server has no record for the browser but local progress exists, the page uploads the local array. Every checkbox change and reset is written to both `localStorage` and SQLite. In static mode, only `localStorage` is used.
+
+No analytics are collected. In static mode, no quiz scores or personal data are sent anywhere. With the Rust server, the submitted name, score, and progress array are stored only in the local SQLite file and are never forwarded to another service.
 
 ---
 
@@ -181,8 +281,10 @@ No quiz scores or personal data are sent to a server.
 2. **Portraits** — replace `assets/creator.jpg` and `assets/creator-sm.jpg`. Keep a 3:4 portrait ratio and make the smaller image roughly half the width of the large one for the `srcset`.
 3. **Social card** — replace `assets/og-card.png` with a 1200 × 630 image. If the site moves to a custom domain, update `og:url`, `og:image`, and `twitter:image` in the head.
 4. **Roadmap** — after changing milestones, bump `RP_KEY` as described above.
-5. **Rust server** — rebuild with `cargo run` after changing embedded files.
-6. **GitHub Pages** — commit and push to `main`; no build step is needed.
+5. **Quiz** — after changing the number of questions, update `QUIZ_TOTAL` in `src/api.rs`.
+6. **Database** — add a migration in `src/db.rs` before changing an existing table.
+7. **Rust server** — rebuild with `cargo run` after changing embedded files or server code.
+8. **GitHub Pages** — commit and push to `main`; no build step is needed.
 
 ---
 
@@ -191,13 +293,16 @@ No quiz scores or personal data are sent to a server.
 | Check | Result |
 | --- | --- |
 | Static audit (structure, anchors, CSS classes, Rust includes) | Pass |
-| Browser console errors | 0 |
+| Browser console errors (static and SQLite modes) | 0 |
 | Lighthouse Accessibility / Best Practices / SEO | **100 / 100 / 100** |
 | Python runtime | CPython **3.13.2** executes and returns output |
 | Layout overflow | None at tested desktop and mobile widths |
 | External resource links | Verified reachable (November 2026) |
+| SQLite schema and API contract | Validated with SQLite and a mock HTTP harness |
+| Leaderboard flow | Submit, rank, deduplicate, and reload verified |
+| Roadmap sync | SQLite PUT, reload, and reset verified |
 
-Runtime checks covered the loader and skip control, all seven code tabs, the demo terminal, the Pyodide playground, quiz scoring and restart, roadmap persistence and reset, the mobile menu, scroll progress, scroll spy, back-to-top, and the skip link.
+Runtime checks covered the loader and skip control, all seven code tabs, the demo terminal, the Pyodide playground, quiz scoring and restart, leaderboard submission, roadmap persistence and SQLite sync, the mobile menu, scroll progress, scroll spy, back-to-top, and the skip link.
 
 The site honours the operating system’s **reduce-motion** preference. To preview the full motion system, enable animations in the OS accessibility settings.
 
@@ -205,7 +310,7 @@ The site honours the operating system’s **reduce-motion** preference. To previ
 
 ## Deployment
 
-### GitHub Pages
+### GitHub Pages (static)
 
 The repository is served directly from the root of `main`:
 
@@ -214,23 +319,28 @@ The repository is served directly from the root of `main`:
 
 Push changes, wait for the Pages build (about a minute), then hard-refresh with `Ctrl + F5` if the old version is cached.
 
+GitHub Pages cannot run the Rust server or SQLite. The live site therefore uses browser storage and hides the leaderboard card.
+
 ### Self-hosted Rust
 
 ```bash
 cargo build --release
-./target/release/python-learning-site
+PLH_DB_PATH=./data/python-learning-hub.db ./target/release/python-learning-site
 ```
 
-Remember that the binary binds to loopback by default and that assets are embedded at compile time.
+The binary binds to loopback by default, assets are embedded at compile time, and the SQLite file is created if it does not exist. Back it up before upgrades.
 
 ---
 
 ## Constraints
 
 - The playground needs network access on its first run to fetch Pyodide from jsDelivr.
-- Roadmap progress is per-browser and per-origin; it does not sync across devices.
-- There are no accounts, server-side storage, or analytics.
+- Roadmap progress is per-browser and per-origin; it does not sync across devices or browsers.
+- The SQLite leaderboard and progress sync work only when the site is served by the Rust server.
+- There are no accounts, authentication, or analytics.
+- The leaderboard is public to anyone who can reach the API; do not expose it without protection.
 - The Rust server is optional; GitHub Pages serves the static site.
+- Bundled SQLite needs a C compiler when building the Rust binary.
 
 ---
 

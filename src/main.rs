@@ -1,11 +1,17 @@
+mod api;
+mod db;
+
+use api::AppState;
 use axum::{
     body::Body,
     http::{header, HeaderMap, HeaderValue, StatusCode},
-    response::{Html, Response},
-    routing::get,
+    response::{Html, IntoResponse, Response},
+    routing::{get, post},
     Router,
 };
+use db::Database;
 use std::net::SocketAddr;
+use std::path::Path;
 
 /// The website and its media are embedded into the binary at compile time.
 /// Edit `index.html` or `assets/`, then rebuild with `cargo run`.
@@ -15,11 +21,29 @@ const CREATOR_IMAGE_SM: &[u8] = include_bytes!("../assets/creator-sm.jpg");
 
 #[tokio::main]
 async fn main() {
+    let db_path =
+        std::env::var("PLH_DB_PATH").unwrap_or_else(|_| "python-learning-hub.db".to_owned());
+    let database = Database::open(Path::new(&db_path)).unwrap_or_else(|error| {
+        eprintln!("failed to open database at {db_path}: {error}");
+        std::process::exit(1);
+    });
+    println!("SQLite database ready at {db_path}");
+
     let app = Router::new()
         .route("/", get(home))
         .route("/index.html", get(home))
         .route("/assets/creator.jpg", get(creator_image))
         .route("/assets/creator-sm.jpg", get(creator_image_sm))
+        .route("/api/health", get(api::health))
+        .route("/api/leaderboard", get(api::leaderboard))
+        .route("/api/quiz-attempts", post(api::submit_quiz))
+        .route(
+            "/api/progress/:client_id",
+            get(api::get_progress)
+                .put(api::put_progress)
+                .delete(api::delete_progress),
+        )
+        .with_state(AppState { db: database })
         .fallback(not_found);
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
@@ -34,8 +58,13 @@ async fn main() {
         .expect("server error");
 }
 
-async fn home() -> Html<&'static str> {
-    Html(INDEX_HTML)
+async fn home() -> Response {
+    let mut response = Html(INDEX_HTML).into_response();
+    // Lets the frontend detect the SQLite backend without probing a 404 route.
+    response
+        .headers_mut()
+        .insert("x-plh-backend", HeaderValue::from_static("sqlite"));
+    response
 }
 
 async fn creator_image(headers: HeaderMap) -> Response {
